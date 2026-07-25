@@ -1,0 +1,84 @@
+﻿<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Admin - Yayasan Bukit Cahaya Indonesia</title>
+  <link rel="icon" href="images/logo-yabisa.jpeg">
+  <link rel="manifest" href="admin-manifest.json">
+  <meta name="theme-color" content="#1f6f35">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar">
+      <img src="images/logo-yabisa.jpeg" alt="Logo YABISA">
+      <h1>Admin Website<br>Yayasan Bukit Cahaya Indonesia</h1>
+      <button class="active" data-panel="dashboard">Dashboard</button>
+      <button data-panel="campaign">Campaign</button>
+      <button data-panel="program">Program</button>
+      <button data-panel="article">Artikel</button>
+      <button data-panel="gallery">Galery</button>
+      <button data-panel="settings">Pengaturan</button>
+      <a href="index.html">Lihat Website</a>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div><h2>Dashboard Admin</h2><p class="muted">Prototype admin ini menyimpan data di browser lokal. Untuk versi produksi, data perlu dipindahkan ke database.</p></div>
+        <div class="actions"><button class="btn btn-gold" id="exportData">Ekspor JSON</button><label class="btn btn-light">Impor JSON<input id="importData" type="file" accept=".json" hidden></label><button class="btn btn-light" id="resetData">Reset Data Contoh</button></div>
+      </div>
+
+      <section class="panel active" id="dashboard">
+        <div class="dashboard-summary" id="dashboardSummary"></div>
+        <div class="dashboard-actions">
+          <button class="card quick-card" data-panel="campaign"><span>Campaign</span><strong>Kelola campaign donasi</strong><small>Tambah, edit, atau hapus campaign.</small></button>
+          <button class="card quick-card" data-panel="program"><span>Program</span><strong>Kelola program yayasan</strong><small>Perbarui daftar program publik.</small></button>
+          <button class="card quick-card" data-panel="article"><span>Artikel</span><strong>Kelola artikel</strong><small>Publikasikan kabar dan edukasi.</small></button>
+          <button class="card quick-card" data-panel="gallery"><span>Galery</span><strong>Kelola foto kegiatan</strong><small>Tambah dokumentasi visual.</small></button>
+        </div>
+        <div class="card help-card"><h3>Cara Pakai</h3><p>Gunakan tombol pintas di atas untuk masuk ke menu yang ingin dikelola. Setelah menambah atau mengedit data, klik simpan lalu buka halaman publik pada browser yang sama untuk melihat perubahan.</p><p class="muted">Upload gambar pada prototype dapat memakai tombol upload atau URL gambar. Ukuran upload maksimal sekitar 900 KB. Untuk file lokal permanen, letakkan gambar di folder <strong>images</strong>, lalu isi misalnya <strong>images/foto-kegiatan.jpg</strong>.</p></div>
+      </section>
+
+      <section class="panel" id="campaign">
+        <div class="card"><h3>Tambah/Edit Campaign</h3><form class="form" data-form="campaign"><div class="grid"><input required name="title" placeholder="Nama campaign"><select required name="category"><option value="">Kategori</option><option value="unggulan">Program Unggulan</option><option value="rutin">Campaign Rutin</option><option value="musiman">Campaign Musiman</option><option value="khusus">Campaign Khusus</option></select><input required name="target" placeholder="Target donasi"><input required name="collected" placeholder="Dana terkumpul"><input required name="percent" type="number" min="0" max="100" placeholder="Persentase"><input required name="image" placeholder="URL/path gambar atau hasil upload"><label>Upload gambar campaign<input type="file" accept="image/*" data-image-upload="campaign"></label></div><textarea required name="desc" placeholder="Deskripsi singkat"></textarea><button class="btn btn-primary" type="submit">Simpan Campaign</button><button class="btn btn-light" type="button" onclick="clearForm('campaign')">Bersihkan</button></form></div>
+        <div class="card"><h3>Campaign Terpublikasi</h3><p class="muted">Campaign yang muncul di halaman website dapat diedit atau dihapus dari daftar ini.</p><div id="campaignManageTable"></div></div>
+      </section>
+
+      <section class="panel" id="program">
+        <div class="card"><h3>Tambah/Edit Program</h3><form class="form" data-form="program"><div class="grid"><input required name="title" placeholder="Nama program"><input required name="category" placeholder="Kategori: pendidikan sosial keagamaan"><input required name="target" placeholder="Sasaran penerima manfaat"><input required name="status" placeholder="Status program"></div><textarea required name="desc" placeholder="Deskripsi program"></textarea><button class="btn btn-primary" type="submit">Simpan Program</button><button class="btn btn-light" type="button" onclick="clearForm('program')">Bersihkan</button></form></div>
+        <div class="card"><h3>Program Terpublikasi</h3><p class="muted">Program yang muncul di halaman website dapat diedit atau dihapus dari daftar ini.</p><div id="programManageTable"></div></div>
+      </section>
+
+      <section class="panel" id="article">
+        <div class="card"><h3>Tambah/Edit Artikel</h3><form class="form" data-form="article"><div class="grid"><input required name="title" placeholder="Judul artikel"><input required name="date" type="date"><input required name="category" placeholder="Kategori artikel"><input required name="image" placeholder="URL/path gambar atau hasil upload"><label>Upload gambar artikel<input type="file" accept="image/*" data-image-upload="article"></label></div><textarea required name="excerpt" placeholder="Ringkasan artikel"></textarea><textarea required name="content" placeholder="Isi artikel lengkap"></textarea><button class="btn btn-primary" type="submit">Simpan Artikel</button><button class="btn btn-light" type="button" onclick="clearForm('article')">Bersihkan</button></form></div>
+        <div class="card"><h3>Artikel Terpublikasi</h3><p class="muted">Artikel yang muncul di halaman website dapat diedit atau dihapus dari daftar ini.</p><div id="articleManageTable"></div></div>
+      </section>
+
+      <section class="panel" id="gallery">
+        <div class="card"><h3>Tambah/Edit Foto Galery</h3><form class="form" data-form="gallery"><div class="grid"><input required name="title" placeholder="Judul foto"><input required name="tag" placeholder="Label kegiatan"><input required name="image" placeholder="URL/path gambar atau hasil upload"><label>Upload foto kegiatan, maksimal 5 foto<input type="file" accept="image/*" data-image-upload="gallery" multiple></label></div><textarea required name="desc" placeholder="Keterangan foto"></textarea><button class="btn btn-primary" type="submit">Simpan Foto</button><button class="btn btn-light" type="button" onclick="clearForm('gallery')">Bersihkan</button></form></div>
+        <div class="card"><h3>Foto Galery Terpublikasi</h3><p class="muted">Foto yang muncul di halaman galery dapat diedit atau dihapus dari daftar ini.</p><div id="galleryManageTable"></div></div>
+        <div class="card"><h3>Tambah/Edit Dokumentasi Video YouTube</h3><form class="form" data-form="video"><div class="grid"><input required name="title" placeholder="Judul video"><input required name="category" placeholder="Kategori, contoh: YouTube"><input required name="url" placeholder="Link video YouTube"></div><textarea name="desc" placeholder="Keterangan video"></textarea><button class="btn btn-primary" type="submit">Simpan Video</button><button class="btn btn-light" type="button" onclick="clearForm('video')">Bersihkan</button></form></div>
+        <div class="card"><h3>Video YouTube Terpublikasi</h3><p class="muted">Video yang muncul di halaman beranda dan galery dapat diedit atau dihapus dari daftar ini.</p><div id="videoManageTable"></div></div>
+      </section>
+
+      <section class="panel" id="settings">
+        <div class="card"><h3>Pengaturan Umum</h3><form class="form" data-form="settings"><input required name="whatsapp" placeholder="Nomor WhatsApp format 62"><input required name="email" placeholder="Email yayasan"><button class="btn btn-primary" type="submit">Simpan Pengaturan</button></form></div>
+      </section>
+    </main>
+  </div>
+  <div class="toast"></div>
+  <script src="yabisa-data.js"></script><script src="admin.js"></script>
+  <script>
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      navigator.serviceWorker.register("admin-sw.js");
+    }
+  </script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,194 @@
+const YABISA_CMS_KEY = "yabisaCmsData";
+
+const YABISA_DEFAULTS = {
+  campaigns: [
+    { id: "rumah-harapan-anak-yatim", title: "Wujudkan Rumah Harapan Anak Yatim", category: "unggulan", target: "Rp500.000.000", collected: "Rp120.000.000", percent: 24, image: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=900&q=80", desc: "Mari hadirkan tempat tinggal yang layak sebagai rumah tumbuh, belajar, dan menggapai masa depan bagi anak-anak yatim." },
+    { id: "sedekah-beras", title: "Sedekah Beras, Hadirkan Senyum di Setiap Piring", category: "unggulan", target: "Rp15.000.000 per bulan", collected: "Rp6.900.000", percent: 46, image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=900&q=80", desc: "Satu karung beras yang Anda berikan dapat menjadi sumber kebahagiaan bagi keluarga yang membutuhkan." },
+    { id: "wakaf-quran", title: "Wakaf Al-Qur'an, Hadiah Pahala yang Terus Mengalir", category: "unggulan", target: "Rp20.000.000", collected: "Rp7.000.000", percent: 35, image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=900&q=80", desc: "Setiap huruf yang dibaca menjadi amal jariyah yang terus mengalir untuk Anda." }
+  ],
+  programs: [
+    { id: "asrama-yatim", title: "Pengembangan dan Operasional Asrama Yatim", category: "pendidikan sosial", target: "Anak yatim dan dhuafa", status: "Berjalan", desc: "Pengembangan asrama sebagai ruang tumbuh, belajar, dan pembinaan." },
+    { id: "jumat-berkah", title: "Jumat Berkah", category: "sosial keagamaan", target: "Anak yatim dan masyarakat sekitar", status: "Rutin", desc: "Santunan dan makan siang bergizi setiap Jumat." }
+  ],
+  gallery: [
+    { id: "kegiatan-sosial-relawan", title: "Kegiatan Sosial Relawan", tag: "Dokumentasi", image: "https://images.unsplash.com/photo-1490424660416-359912d314b3?auto=format&fit=crop&w=900&q=80", images: ["https://images.unsplash.com/photo-1490424660416-359912d314b3?auto=format&fit=crop&w=900&q=80"], desc: "Kebersamaan relawan dalam mendampingi penerima manfaat." }
+  ],
+  videos: [],
+  articles: [
+    { id: "pembinaan-anak-yatim-berkelanjutan", title: "Mengapa Pembinaan Anak Yatim Perlu Berkelanjutan?", date: "2026-07-21", category: "Edukasi", image: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=900&q=80", excerpt: "Bantuan terbaik tidak hanya hadir sesaat, tetapi ikut membangun karakter, pendidikan, dan kemandirian anak.", content: "Artikel ini merupakan konten contoh dan dapat diganti oleh admin melalui dashboard." },
+    { id: "sedekah-beras-keluarga-dhuafa", title: "Sedekah Beras dan Dampaknya bagi Keluarga Dhuafa", date: "2026-07-21", category: "Sosial", image: "https://images.unsplash.com/photo-1593113616828-6f22bca04804?auto=format&fit=crop&w=900&q=80", excerpt: "Kebutuhan pangan yang terpenuhi dapat membantu keluarga menjaga kesehatan dan ketenangan hidup sehari-hari.", content: "Artikel ini merupakan konten contoh dan dapat diganti oleh admin melalui dashboard." },
+    { id: "jumat-berkah-kepedulian-konsisten", title: "Jumat Berkah: Membiasakan Kepedulian yang Konsisten", date: "2026-07-21", category: "Kegiatan", image: "https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=900&q=80", excerpt: "Program rutin membantu membangun kebiasaan berbagi yang tertib, dekat, dan menyentuh kebutuhan nyata.", content: "Artikel ini merupakan konten contoh dan dapat diganti oleh admin melalui dashboard." }
+  ],
+  settings: { whatsapp: "6282320096788", email: "yabisaofficial2004@gmail.com" }
+};
+
+function yabisaClone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function yabisaSlug(text) {
+  return String(text || "item")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "item";
+}
+
+function yabisaText(value) {
+  return String(value ?? "");
+}
+
+function yabisaSafeUrl(value, fallback = "") {
+  const url = yabisaText(value).trim();
+  if (!url) return fallback;
+  if (/^(https?:|data:image\/|images\/|\.\/images\/)/i.test(url)) return url;
+  return fallback;
+}
+
+function yabisaCleanPhone(value) {
+  const digits = yabisaText(value).replace(/\D/g, "");
+  if (!digits) return "6282320096788";
+  if (digits.startsWith("0")) return `62${digits.slice(1)}`;
+  return digits;
+}
+
+function yabisaYouTubeId(value) {
+  const url = yabisaText(value).trim();
+  if (!url) return "";
+  const patterns = [
+    /youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/,
+    /youtu\.be\/([A-Za-z0-9_-]{6,})/,
+    /youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/,
+    /youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return "";
+}
+
+function yabisaYouTubeUrl(value) {
+  const id = yabisaYouTubeId(value);
+  return id ? `https://www.youtube.com/watch?v=${id}` : "";
+}
+
+function yabisaYouTubeThumbnail(value) {
+  const id = yabisaYouTubeId(value);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : "images/logo-yabisa.jpeg";
+}
+
+function yabisaEscapeHtml(value) {
+  return yabisaText(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;" }[char]));
+}
+
+function yabisaSanitizeHtml(html) {
+  const template = document.createElement("template");
+  template.innerHTML = yabisaText(html);
+  const allowedTags = new Set(["P", "BR", "STRONG", "EM", "UL", "OL", "LI", "H2", "H3", "BLOCKQUOTE", "A"]);
+  const walk = node => {
+    [...node.children].forEach(child => {
+      if (!allowedTags.has(child.tagName)) {
+        child.replaceWith(document.createTextNode(child.textContent || ""));
+        return;
+      }
+      [...child.attributes].forEach(attr => {
+        const name = attr.name.toLowerCase();
+        if (child.tagName === "A" && name === "href" && /^(https?:|mailto:)/i.test(attr.value)) {
+          child.setAttribute("target", "_blank");
+          child.setAttribute("rel", "noopener noreferrer");
+        } else {
+          child.removeAttribute(attr.name);
+        }
+      });
+      walk(child);
+    });
+  };
+  walk(template.content);
+  return template.innerHTML;
+}
+
+function yabisaNormalizeData(raw) {
+  const base = yabisaClone(YABISA_DEFAULTS);
+  const source = raw && typeof raw === "object" ? raw : {};
+  const normalizeList = (key, mapper) => Array.isArray(source[key]) ? source[key].map((item, index) => mapper(item || {}, index)) : base[key];
+  base.campaigns = normalizeList("campaigns", (item, index) => ({
+    id: yabisaText(item.id || yabisaSlug(item.title) || `campaign-${index + 1}`),
+    title: yabisaText(item.title || "Campaign YABISA"),
+    category: yabisaText(item.category || "unggulan"),
+    target: yabisaText(item.target || "Data Contoh"),
+    collected: yabisaText(item.collected || "Data Contoh"),
+    percent: Math.max(0, Math.min(100, Number(item.percent) || 0)),
+    image: yabisaSafeUrl(item.image, base.campaigns[0].image),
+    desc: yabisaText(item.desc || "")
+  }));
+  base.programs = normalizeList("programs", (item, index) => ({
+    id: yabisaText(item.id || yabisaSlug(item.title) || `program-${index + 1}`),
+    title: yabisaText(item.title || "Program YABISA"),
+    category: yabisaText(item.category || "sosial"),
+    target: yabisaText(item.target || "Penerima manfaat"),
+    status: yabisaText(item.status || "Berjalan"),
+    desc: yabisaText(item.desc || "")
+  }));
+  base.gallery = normalizeList("gallery", (item, index) => ({
+    id: yabisaText(item.id || yabisaSlug(item.title) || `galeri-${index + 1}`),
+    title: yabisaText(item.title || "Dokumentasi Kegiatan"),
+    tag: yabisaText(item.tag || "Dokumentasi"),
+    image: yabisaSafeUrl(item.image || item.images?.[0], base.gallery[0].image),
+    images: Array.isArray(item.images) && item.images.length ? item.images.slice(0, 5).map(src => yabisaSafeUrl(src, base.gallery[0].image)) : [yabisaSafeUrl(item.image, base.gallery[0].image)],
+    desc: yabisaText(item.desc || "")
+  }));
+  const groupedGallery = new Map();
+  base.gallery.forEach(item => {
+    const titleBase = item.title.replace(/\s+\d+$/, "").trim() || item.title;
+    const key = `${titleBase.toLowerCase()}|${item.tag.toLowerCase()}|${item.desc.toLowerCase()}`;
+    if (!groupedGallery.has(key)) {
+      groupedGallery.set(key, { ...item, id: yabisaSlug(titleBase), title: titleBase, images: [] });
+    }
+    const group = groupedGallery.get(key);
+    [...(item.images || []), item.image].forEach(src => {
+      const safe = yabisaSafeUrl(src, base.gallery[0].image);
+      if (safe && !group.images.includes(safe) && group.images.length < 5) group.images.push(safe);
+    });
+    group.image = group.images[0] || item.image;
+  });
+  base.gallery = [...groupedGallery.values()];
+  base.videos = normalizeList("videos", (item, index) => {
+    const url = yabisaYouTubeUrl(item.url || item.youtube || item.link);
+    return {
+      id: yabisaText(item.id || yabisaSlug(item.title) || `video-${index + 1}`),
+      title: yabisaText(item.title || "Dokumentasi Video"),
+      category: yabisaText(item.category || "YouTube"),
+      url,
+      thumbnail: url ? yabisaYouTubeThumbnail(url) : yabisaSafeUrl(item.thumbnail, "images/logo-yabisa.jpeg"),
+      desc: yabisaText(item.desc || "")
+    };
+  }).filter(video => video.url);
+  base.articles = normalizeList("articles", (item, index) => ({
+    id: yabisaText(item.id || yabisaSlug(item.title) || `artikel-${index + 1}`),
+    title: yabisaText(item.title || "Artikel YABISA"),
+    date: yabisaText(item.date || "2026-07-21"),
+    category: yabisaText(item.category || "Artikel"),
+    image: yabisaSafeUrl(item.image, base.articles[0].image),
+    excerpt: yabisaText(item.excerpt || ""),
+    content: yabisaText(item.content || "")
+  }));
+  base.settings = {
+    whatsapp: yabisaCleanPhone(source.settings?.whatsapp || base.settings.whatsapp),
+    email: yabisaText(source.settings?.email || base.settings.email)
+  };
+  return base;
+}
+
+function yabisaLoadCms() {
+  try {
+    return yabisaNormalizeData(JSON.parse(localStorage.getItem(YABISA_CMS_KEY) || "null"));
+  } catch {
+    return yabisaClone(YABISA_DEFAULTS);
+  }
+}
+
+function yabisaWhatsAppLink(message, data = yabisaLoadCms()) {
+  const phone = yabisaCleanPhone(data.settings?.whatsapp);
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+}
