@@ -7,8 +7,12 @@ const YABISA_DEFAULTS = {
     { id: "wakaf-quran", title: "Wakaf Al-Qur'an, Hadiah Pahala yang Terus Mengalir", category: "unggulan", target: "Rp20.000.000", collected: "Rp7.000.000", percent: 35, image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=900&q=80", desc: "Setiap huruf yang dibaca menjadi amal jariyah yang terus mengalir untuk Anda." }
   ],
   programs: [
-    { id: "asrama-yatim", title: "Pengembangan dan Operasional Asrama Yatim", category: "pendidikan sosial", target: "Anak yatim dan dhuafa", status: "Berjalan", desc: "Pengembangan asrama sebagai ruang tumbuh, belajar, dan pembinaan." },
-    { id: "jumat-berkah", title: "Jumat Berkah", category: "sosial keagamaan", target: "Anak yatim dan masyarakat sekitar", status: "Rutin", desc: "Santunan dan makan siang bergizi setiap Jumat." }
+    { id: "asrama-yatim", title: "Asrama Yatim", category: "pendidikan sosial", target: "Anak yatim dan dhuafa", status: "Berjalan", desc: "Rumah pembinaan dan pendampingan bagi anak yatim agar tumbuh mandiri dan berakhlak mulia." },
+    { id: "jumat-berkah", title: "Jumat Berkah", category: "sosial keagamaan", target: "Anak yatim dan masyarakat sekitar", status: "Rutin", desc: "Kegiatan berbagi rutin untuk menghadirkan kebahagiaan dan kepedulian setiap Jumat." },
+    { id: "sedekah-beras", title: "Sedekah Beras", category: "sosial kemanusiaan", target: "Anak binaan dan masyarakat membutuhkan", status: "Rutin", desc: "Dukungan pangan untuk anak binaan dan masyarakat yang membutuhkan." },
+    { id: "wakaf-quran", title: "Wakaf Al-Qur'an", category: "keagamaan", target: "Santri, anak binaan, dan masyarakat", status: "Berjalan", desc: "Distribusi mushaf untuk mendukung pembelajaran, ibadah, dan amal jariyah." },
+    { id: "wakaf-quran-braille", title: "Wakaf Al-Qur'an Braille", category: "keagamaan kemanusiaan", target: "Sahabat tunanetra", status: "Berjalan", desc: "Membantu sahabat tunanetra membaca dan mempelajari Al-Qur'an." },
+    { id: "mari-berqurban", title: "Mari Berqurban", category: "keagamaan sosial", target: "Penerima manfaat dan masyarakat luas", status: "Musiman", desc: "Menyalurkan manfaat qurban kepada penerima manfaat dan masyarakat luas." }
   ],
   gallery: [
     { id: "kegiatan-sosial-relawan", title: "Kegiatan Sosial Relawan", tag: "Dokumentasi", image: "https://images.unsplash.com/photo-1490424660416-359912d314b3?auto=format&fit=crop&w=900&q=80", images: ["https://images.unsplash.com/photo-1490424660416-359912d314b3?auto=format&fit=crop&w=900&q=80"], desc: "Kebersamaan relawan dalam mendampingi penerima manfaat." }
@@ -19,7 +23,7 @@ const YABISA_DEFAULTS = {
     { id: "sedekah-beras-keluarga-dhuafa", title: "Sedekah Beras dan Dampaknya bagi Keluarga Dhuafa", date: "2026-07-21", category: "Sosial", image: "https://images.unsplash.com/photo-1593113616828-6f22bca04804?auto=format&fit=crop&w=900&q=80", excerpt: "Kebutuhan pangan yang terpenuhi dapat membantu keluarga menjaga kesehatan dan ketenangan hidup sehari-hari.", content: "Artikel ini merupakan konten contoh dan dapat diganti oleh admin melalui dashboard." },
     { id: "jumat-berkah-kepedulian-konsisten", title: "Jumat Berkah: Membiasakan Kepedulian yang Konsisten", date: "2026-07-21", category: "Kegiatan", image: "https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=900&q=80", excerpt: "Program rutin membantu membangun kebiasaan berbagi yang tertib, dekat, dan menyentuh kebutuhan nyata.", content: "Artikel ini merupakan konten contoh dan dapat diganti oleh admin melalui dashboard." }
   ],
-  settings: { whatsapp: "6282320096788", email: "yabisaofficial2004@gmail.com" }
+  settings: { whatsapp: "6285882874778", email: "yabisaofficial2004@gmail.com" }
 };
 
 function yabisaClone(value) {
@@ -47,7 +51,7 @@ function yabisaSafeUrl(value, fallback = "") {
 
 function yabisaCleanPhone(value) {
   const digits = yabisaText(value).replace(/\D/g, "");
-  if (!digits) return "6282320096788";
+  if (!digits) return "6285882874778";
   if (digits.startsWith("0")) return `62${digits.slice(1)}`;
   return digits;
 }
@@ -130,6 +134,11 @@ function yabisaNormalizeData(raw) {
     status: yabisaText(item.status || "Berjalan"),
     desc: yabisaText(item.desc || "")
   }));
+  const hasOldDefaultPrograms = Array.isArray(source.programs)
+    && source.programs.length === 2
+    && source.programs.some(item => item?.title === "Pengembangan dan Operasional Asrama Yatim")
+    && source.programs.some(item => item?.id === "jumat-berkah");
+  if (hasOldDefaultPrograms) base.programs = yabisaClone(YABISA_DEFAULTS.programs);
   base.gallery = normalizeList("gallery", (item, index) => ({
     id: yabisaText(item.id || yabisaSlug(item.title) || `galeri-${index + 1}`),
     title: yabisaText(item.title || "Dokumentasi Kegiatan"),
@@ -174,7 +183,7 @@ function yabisaNormalizeData(raw) {
     content: yabisaText(item.content || "")
   }));
   base.settings = {
-    whatsapp: yabisaCleanPhone(source.settings?.whatsapp || base.settings.whatsapp),
+    whatsapp: yabisaCleanPhone(source.settings?.whatsapp === "6282320096788" ? base.settings.whatsapp : source.settings?.whatsapp || base.settings.whatsapp),
     email: yabisaText(source.settings?.email || base.settings.email)
   };
   return base;

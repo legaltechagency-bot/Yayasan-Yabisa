@@ -26,7 +26,7 @@ function copyText(text) {
 }
 
 function currentCmsData() {
-  return typeof yabisaLoadCms === "function" ? yabisaLoadCms() : { settings: { whatsapp: "6282320096788", email: "yabisaofficial2004@gmail.com" } };
+  return typeof yabisaLoadCms === "function" ? yabisaLoadCms() : { settings: { whatsapp: "6285882874778", email: "yabisaofficial2004@gmail.com" } };
 }
 
 function defaultWaMessage() {
