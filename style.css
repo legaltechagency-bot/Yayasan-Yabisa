@@ -58,7 +58,7 @@ button, input, select, textarea { font: inherit; }
 .btn-light { background: var(--white); color: var(--green-dark); border: 1px solid var(--line); }
 .btn-ghost { background: transparent; color: var(--green-dark); border: 1px solid rgba(31,111,53,.25); }
 
-.hero { min-height: calc(100vh - 76px); display: grid; align-items: center; color: var(--white); background: linear-gradient(90deg, rgba(20,38,22,.82), rgba(20,38,22,.38)), url("https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1800&q=80") center/cover; }
+.hero { min-height: calc(100vh - 76px); display: grid; align-items: center; color: var(--white); background: linear-gradient(90deg, rgba(20,38,22,.86), rgba(20,38,22,.52)), url("images/hero-asrama-yabisa.jpg") center/cover; }
 .hero .container { padding: 84px 0; }
 .hero-content { max-width: 760px; }
 .hero-logo { width: 82px; height: 82px; object-fit: contain; border-radius: 50%; background: rgba(255,255,255,.92); padding: 6px; margin-bottom: 18px; }
