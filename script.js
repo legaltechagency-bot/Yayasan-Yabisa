@@ -231,6 +231,23 @@ function setupMisc() {
   });
 }
 
+function setupPageTransitions() {
+  document.body.classList.add("page-ready");
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+  document.addEventListener("click", event => {
+    const link = event.target.closest("a[href]");
+    if (!link) return;
+    const href = link.getAttribute("href") || "";
+    if (!href || href === "#" || href.startsWith("#") || link.target === "_blank" || link.hasAttribute("download") || link.dataset.wa !== undefined) return;
+    let url;
+    try { url = new URL(href, location.href); } catch { return; }
+    if (url.origin !== location.origin || url.pathname === location.pathname && url.search === location.search) return;
+    event.preventDefault();
+    document.body.classList.add("page-leaving");
+    setTimeout(() => { location.href = url.href; }, 180);
+  });
+}
+
 function setupImageFallbacks() {
   document.querySelectorAll("img").forEach(img => {
     img.addEventListener("error", () => {
@@ -259,6 +276,7 @@ function refreshReveal(root = document) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  setupPageTransitions();
   renderDonationBanks();
   setupNav();
   setupModals();
