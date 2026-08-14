@@ -2,17 +2,20 @@ const YABISA_CMS_KEY = "yabisaCmsData";
 
 const YABISA_DEFAULTS = {
   campaigns: [
-    { id: "rumah-harapan-anak-yatim", title: "Wujudkan Rumah Harapan Anak Yatim", category: "unggulan", target: "Rp500.000.000", collected: "Rp120.000.000", percent: 24, image: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=900&q=80", desc: "Mari hadirkan tempat tinggal yang layak sebagai rumah tumbuh, belajar, dan menggapai masa depan bagi anak-anak yatim." },
-    { id: "sedekah-beras", title: "Sedekah Beras, Hadirkan Senyum di Setiap Piring", category: "unggulan", target: "Rp15.000.000 per bulan", collected: "Rp6.900.000", percent: 46, image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=900&q=80", desc: "Satu karung beras yang Anda berikan dapat menjadi sumber kebahagiaan bagi keluarga yang membutuhkan." },
-    { id: "wakaf-quran", title: "Wakaf Al-Qur'an, Hadiah Pahala yang Terus Mengalir", category: "unggulan", target: "Rp20.000.000", collected: "Rp7.000.000", percent: 35, image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=900&q=80", desc: "Setiap huruf yang dibaca menjadi amal jariyah yang terus mengalir untuk Anda." }
+    { id: "rumah-harapan-anak-yatim", title: "Wujudkan Rumah Harapan Anak Yatim", category: "asrama-yatim", target: "Rp500.000.000", collected: "Rp120.000.000", percent: 24, image: "images/hero-asrama-yabisa.jpg", desc: "Mari hadirkan tempat tinggal yang layak sebagai rumah tumbuh, belajar, dan menggapai masa depan bagi anak-anak yatim." },
+    { id: "sedekah-beras", title: "Sedekah Beras, Hadirkan Senyum di Setiap Piring", category: "sedekah-beras", target: "Rp15.000.000 per bulan", collected: "Rp6.900.000", percent: 46, image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=900&q=80", desc: "Satu karung beras yang Anda berikan dapat menjadi sumber kebahagiaan bagi keluarga yang membutuhkan." },
+    { id: "wakaf-quran", title: "Wakaf Al-Qur'an, Hadiah Pahala yang Terus Mengalir", category: "wakaf-quran", target: "Rp20.000.000", collected: "Rp7.000.000", percent: 35, image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=900&q=80", desc: "Setiap huruf yang dibaca menjadi amal jariyah yang terus mengalir untuk Anda." },
+    { id: "jumat-berkah", title: "Jumat Berkah, Tebar Kebahagiaan", category: "jumat-berkah", target: "Rp10.000.000 per bulan", collected: "Rp3.000.000", percent: 30, image: "images/tentang-asrama-yabisa.jpeg", desc: "Mari hadirkan kebahagiaan untuk anak-anak yatim melalui santunan dan makan siang bergizi setiap hari Jumat." },
+    { id: "wakaf-quran-braille", title: "Wakaf Al-Qur'an Braille untuk Sahabat Tunanetra", category: "wakaf-quran-braille", target: "Rp100.000.000", collected: "Rp12.000.000", percent: 12, image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=900&q=80", desc: "Mari hadirkan cahaya Al-Qur'an bagi sahabat tunanetra melalui Wakaf Al-Qur'an Braille." },
+    { id: "mari-berqurban", title: "Mari Berqurban, Tebar Manfaat Hingga Pelosok", category: "mari-berqurban", target: "Rp250.000.000", collected: "Rp25.000.000", percent: 10, image: "images/profile-kegiatan-yabisa.jpeg", desc: "Salurkan qurban terbaik untuk menghadirkan manfaat bagi anak binaan dan masyarakat yang membutuhkan." }
   ],
   programs: [
-    { id: "asrama-yatim", title: "Asrama Yatim", category: "pendidikan sosial", target: "Anak yatim dan dhuafa", status: "Berjalan", desc: "Rumah pembinaan dan pendampingan bagi anak yatim agar tumbuh mandiri dan berakhlak mulia." },
-    { id: "jumat-berkah", title: "Jumat Berkah", category: "sosial keagamaan", target: "Anak yatim dan masyarakat sekitar", status: "Rutin", desc: "Kegiatan berbagi rutin untuk menghadirkan kebahagiaan dan kepedulian setiap Jumat." },
-    { id: "sedekah-beras", title: "Sedekah Beras", category: "sosial kemanusiaan", target: "Anak binaan dan masyarakat membutuhkan", status: "Rutin", desc: "Dukungan pangan untuk anak binaan dan masyarakat yang membutuhkan." },
-    { id: "wakaf-quran", title: "Wakaf Al-Qur'an", category: "keagamaan", target: "Santri, anak binaan, dan masyarakat", status: "Berjalan", desc: "Distribusi mushaf untuk mendukung pembelajaran, ibadah, dan amal jariyah." },
-    { id: "wakaf-quran-braille", title: "Wakaf Al-Qur'an Braille", category: "keagamaan kemanusiaan", target: "Sahabat tunanetra", status: "Berjalan", desc: "Membantu sahabat tunanetra membaca dan mempelajari Al-Qur'an." },
-    { id: "mari-berqurban", title: "Mari Berqurban", category: "keagamaan sosial", target: "Penerima manfaat dan masyarakat luas", status: "Musiman", desc: "Menyalurkan manfaat qurban kepada penerima manfaat dan masyarakat luas." }
+    { id: "asrama-yatim", title: "Asrama Yatim", category: "pendidikan sosial", campaignCategory: "asrama-yatim", target: "Anak yatim dan dhuafa", status: "Berjalan", image: "images/hero-asrama-yabisa.jpg", desc: "Rumah pembinaan dan pendampingan bagi anak yatim agar tumbuh mandiri dan berakhlak mulia.", content: "Asrama Yatim YABISA menjadi ruang tumbuh bagi anak-anak yatim dan dhuafa. Program ini mendukung kebutuhan tempat tinggal, pendidikan, pembinaan akhlak, mengaji, bimbingan belajar, kesehatan, pangan, dan kebutuhan harian anak-anak asrama." },
+    { id: "jumat-berkah", title: "Jumat Berkah", category: "sosial keagamaan", campaignCategory: "jumat-berkah", target: "Anak yatim dan masyarakat sekitar", status: "Rutin", image: "images/tentang-asrama-yabisa.jpeg", desc: "Kegiatan berbagi rutin untuk menghadirkan kebahagiaan dan kepedulian setiap Jumat.", content: "Jumat Berkah menjadi program rutin untuk menumbuhkan budaya berbagi. Kegiatan ini dapat berupa santunan, makan bersama, pembagian nasi box, dan dukungan kebutuhan sederhana bagi anak binaan serta masyarakat sekitar." },
+    { id: "sedekah-beras", title: "Sedekah Beras", category: "sosial kemanusiaan", campaignCategory: "sedekah-beras", target: "Anak binaan dan masyarakat membutuhkan", status: "Rutin", image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=900&q=80", desc: "Dukungan pangan untuk anak binaan dan masyarakat yang membutuhkan.", content: "Sedekah Beras membantu memenuhi kebutuhan pangan anak binaan, keluarga dhuafa, dan masyarakat yang membutuhkan. Dukungan donatur menjadi bagian penting agar kebutuhan pokok dapat terus terpenuhi." },
+    { id: "wakaf-quran", title: "Wakaf Al-Qur'an", category: "keagamaan", campaignCategory: "wakaf-quran", target: "Santri, anak binaan, dan masyarakat", status: "Berjalan", image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=900&q=80", desc: "Distribusi mushaf untuk mendukung pembelajaran, ibadah, dan amal jariyah.", content: "Wakaf Al-Qur'an membantu menghadirkan mushaf bagi penerima manfaat agar kegiatan membaca, menghafal, dan mempelajari Al-Qur'an dapat berjalan lebih baik." },
+    { id: "wakaf-quran-braille", title: "Wakaf Al-Qur'an Braille", category: "keagamaan kemanusiaan", campaignCategory: "wakaf-quran-braille", target: "Sahabat tunanetra", status: "Berjalan", image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=900&q=80", desc: "Membantu sahabat tunanetra membaca dan mempelajari Al-Qur'an.", content: "Wakaf Al-Qur'an Braille ditujukan untuk sahabat tunanetra agar mereka memiliki akses yang lebih baik untuk membaca dan mempelajari firman Allah." },
+    { id: "mari-berqurban", title: "Mari Berqurban", category: "keagamaan sosial", campaignCategory: "mari-berqurban", target: "Penerima manfaat dan masyarakat luas", status: "Musiman", image: "images/profile-kegiatan-yabisa.jpeg", desc: "Menyalurkan manfaat qurban kepada penerima manfaat dan masyarakat luas.", content: "Mari Berqurban menjadi program musiman untuk menyalurkan hewan qurban kepada penerima manfaat. Program ini menguatkan kepedulian sosial dan menghadirkan kebahagiaan di hari raya." }
   ],
   gallery: [
     { id: "kegiatan-sosial-relawan", title: "Kegiatan Sosial Relawan", tag: "Dokumentasi", image: "https://images.unsplash.com/photo-1490424660416-359912d314b3?auto=format&fit=crop&w=900&q=80", images: ["https://images.unsplash.com/photo-1490424660416-359912d314b3?auto=format&fit=crop&w=900&q=80"], desc: "Kebersamaan relawan dalam mendampingi penerima manfaat." }
@@ -54,6 +57,32 @@ function yabisaCleanPhone(value) {
   if (!digits) return "6285882874778";
   if (digits.startsWith("0")) return `62${digits.slice(1)}`;
   return digits;
+}
+
+function yabisaCampaignCategory(value, id = "") {
+  const current = yabisaSlug(value || id);
+  const byId = {
+    "rumah-harapan-anak-yatim": "asrama-yatim",
+    "sedekah-beras": "sedekah-beras",
+    "wakaf-quran": "wakaf-quran",
+    "jumat-berkah": "jumat-berkah",
+    "wakaf-quran-braille": "wakaf-quran-braille",
+    "mari-berqurban": "mari-berqurban"
+  };
+  const allowed = new Set(["asrama-yatim", "jumat-berkah", "sedekah-beras", "wakaf-quran", "wakaf-quran-braille", "mari-berqurban"]);
+  if (allowed.has(current)) return current;
+  return byId[yabisaSlug(id)] || "asrama-yatim";
+}
+
+function yabisaCategoryLabel(value) {
+  return ({
+    "asrama-yatim": "Asrama Yatim",
+    "jumat-berkah": "Jumat Berkah",
+    "sedekah-beras": "Sedekah Beras",
+    "wakaf-quran": "Wakaf Al-Qur'an",
+    "wakaf-quran-braille": "Wakaf Al-Qur'an Braille",
+    "mari-berqurban": "Mari Berqurban"
+  })[yabisaSlug(value)] || yabisaText(value || "Program");
 }
 
 function yabisaYouTubeId(value) {
@@ -119,7 +148,7 @@ function yabisaNormalizeData(raw) {
   base.campaigns = normalizeList("campaigns", (item, index) => ({
     id: yabisaText(item.id || yabisaSlug(item.title) || `campaign-${index + 1}`),
     title: yabisaText(item.title || "Campaign YABISA"),
-    category: yabisaText(item.category || "unggulan"),
+    category: yabisaCampaignCategory(item.category, item.id || item.title),
     target: yabisaText(item.target || "Data Contoh"),
     collected: yabisaText(item.collected || "Data Contoh"),
     percent: Math.max(0, Math.min(100, Number(item.percent) || 0)),
@@ -132,7 +161,10 @@ function yabisaNormalizeData(raw) {
     category: yabisaText(item.category || "sosial"),
     target: yabisaText(item.target || "Penerima manfaat"),
     status: yabisaText(item.status || "Berjalan"),
-    desc: yabisaText(item.desc || "")
+    image: yabisaSafeUrl(item.image, base.programs[0].image),
+    campaignCategory: yabisaText(item.campaignCategory || item.campaign || item.id || "asrama-yatim"),
+    desc: yabisaText(item.desc || ""),
+    content: yabisaText(item.content || item.desc || "")
   }));
   const hasOldDefaultPrograms = Array.isArray(source.programs)
     && source.programs.length === 2

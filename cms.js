@@ -25,7 +25,7 @@ function renderCampaignCard(campaign) {
   card.dataset.category = campaign.category;
   card.append(cmsImage(campaign.image, campaign.title));
   const body = cmsEl("div", "card-body");
-  body.append(cmsEl("span", "badge", "Data Admin"));
+  body.append(cmsEl("span", "badge", yabisaCategoryLabel(campaign.category)));
   body.append(cmsEl("h3", "", campaign.title));
   body.append(cmsEl("p", "muted", campaign.desc));
   const target = cmsEl("p");
@@ -50,6 +50,7 @@ function renderProgramCard(program) {
   const card = cmsEl("article", "card program-card reveal");
   card.dataset.programCard = "";
   card.dataset.category = program.category;
+  card.append(cmsImage(program.image, program.title));
   const body = cmsEl("div", "card-body");
   body.append(cmsEl("div", "icon", program.status));
   body.append(cmsEl("h3", "", program.title));
@@ -57,9 +58,9 @@ function renderProgramCard(program) {
   const target = cmsEl("p");
   target.innerHTML = `<strong>Sasaran:</strong> ${yabisaEscapeHtml(program.target)}`;
   body.append(target);
-  body.append(cmsButtonLink("Pelajari Program", `program.html#${encodeURIComponent(program.id)}`, "btn btn-light"), document.createTextNode(" "));
+  body.append(cmsButtonLink("Pelajari Program", `detail-program.html?id=${encodeURIComponent(program.id)}`, "btn btn-light"), document.createTextNode(" "));
   const support = cmsButtonLink("Dukung Program", "#", "btn btn-primary");
-  support.dataset.wa = "";
+  support.href = `campaign.html?category=${encodeURIComponent(program.campaignCategory || program.id)}`;
   body.append(support);
   card.id = program.id;
   card.append(body);
@@ -123,7 +124,7 @@ function renderDetailCampaign(data) {
   const campaign = data.campaigns.find(item => item.id === id || yabisaSlug(item.title) === id) || data.campaigns[0];
   document.title = `${campaign.title} - YABISA`;
   document.querySelectorAll("[data-campaign-title]").forEach(el => el.textContent = campaign.title);
-  document.querySelectorAll("[data-campaign-category]").forEach(el => el.textContent = campaign.category);
+  document.querySelectorAll("[data-campaign-category]").forEach(el => el.textContent = yabisaCategoryLabel(campaign.category));
   document.querySelectorAll("[data-campaign-desc]").forEach(el => el.textContent = campaign.desc);
   document.querySelectorAll("[data-campaign-target]").forEach(el => el.textContent = campaign.target);
   document.querySelectorAll("[data-campaign-collected]").forEach(el => el.textContent = campaign.collected);
@@ -166,6 +167,34 @@ function renderDetailGallery(data) {
   }));
 }
 
+function renderDetailProgram(data) {
+  const root = document.querySelector("[data-program-detail]");
+  if (!root) return;
+  const id = new URLSearchParams(location.search).get("id");
+  const program = data.programs.find(item => item.id === id || yabisaSlug(item.title) === id) || data.programs[0];
+  document.title = `${program.title} - YABISA`;
+  document.querySelectorAll("[data-program-title]").forEach(el => el.textContent = program.title);
+  document.querySelectorAll("[data-program-category]").forEach(el => el.textContent = program.category);
+  document.querySelectorAll("[data-program-target]").forEach(el => el.textContent = program.target);
+  document.querySelectorAll("[data-program-status]").forEach(el => el.textContent = program.status);
+  document.querySelectorAll("[data-program-desc]").forEach(el => el.textContent = program.desc);
+  document.querySelectorAll("[data-program-content]").forEach(el => el.textContent = program.content || program.desc);
+  document.querySelectorAll("[data-program-image]").forEach(el => { el.src = program.image; el.alt = program.title; });
+  document.querySelectorAll("[data-program-campaign]").forEach(el => {
+    el.href = `campaign.html?category=${encodeURIComponent(program.campaignCategory || program.id)}`;
+  });
+}
+
+function applyCampaignFilterFromUrl() {
+  const params = new URLSearchParams(location.search);
+  const category = params.get("category");
+  if (!category) return;
+  const group = document.querySelector('[data-filter-group="[data-campaign-card]"]');
+  if (!group) return;
+  const button = [...group.querySelectorAll("[data-filter]")].find(item => item.dataset.filter === category);
+  if (button) button.click();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const cms = yabisaLoadCms();
   replaceGrid("#campaignGrid", cms.campaigns, renderCampaignCard);
@@ -179,6 +208,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderDetailCampaign(cms);
   renderDetailArticle(cms);
   renderDetailGallery(cms);
+  renderDetailProgram(cms);
+  applyCampaignFilterFromUrl();
   updateWhatsAppLinks?.();
   refreshReveal?.();
 });
