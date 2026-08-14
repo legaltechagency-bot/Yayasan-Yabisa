@@ -1,4 +1,4 @@
-const ADMIN_CACHE = "yabisa-admin-v3";
+﻿const ADMIN_CACHE = "yabisa-admin-v3";
 const ADMIN_ASSETS = [
   "./admin.html",
   "./admin.css",
@@ -32,3 +32,5 @@ self.addEventListener("fetch", event => {
       .catch(() => caches.match(event.request))
   );
 });
+
+

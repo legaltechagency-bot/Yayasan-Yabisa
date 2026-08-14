@@ -1,4 +1,4 @@
-const banks = [
+﻿const banks = [
   { name: "BSI", number: "7473337449" },
   { name: "BCA", number: "4740966966" },
   { name: "BRI", number: "711101010524531" },
@@ -178,7 +178,7 @@ function sendDonationConfirmation(form) {
 }
 
 function setupForms() {
-  document.querySelectorAll("form[data-prototype-form]").forEach((form) => {
+  document.querySelectorAll("form[data-frontend-form]").forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const invalid = [...form.querySelectorAll("[required]")].some((field) => !field.value.trim());
@@ -222,7 +222,7 @@ function setupMisc() {
     const placeholder = event.target.closest("a[href='#']");
     if (placeholder) {
       event.preventDefault();
-      showToast("Tautan ini masih placeholder prototype.");
+      showToast("Tautan ini belum tersedia.");
     }
   });
   document.querySelectorAll('a[href^="http"]').forEach(a => {
@@ -271,3 +271,5 @@ document.addEventListener("DOMContentLoaded", () => {
   updateWhatsAppLinks();
   refreshReveal();
 });
+
+

@@ -1,4 +1,4 @@
-const YABISA_CMS_KEY = "yabisaCmsData";
+﻿const YABISA_CMS_KEY = "yabisaCmsData";
 
 const YABISA_DEFAULTS = {
   campaigns: [
@@ -149,8 +149,8 @@ function yabisaNormalizeData(raw) {
     id: yabisaText(item.id || yabisaSlug(item.title) || `campaign-${index + 1}`),
     title: yabisaText(item.title || "Campaign YABISA"),
     category: yabisaCampaignCategory(item.category, item.id || item.title),
-    target: yabisaText(item.target || "Data Contoh"),
-    collected: yabisaText(item.collected || "Data Contoh"),
+    target: yabisaText(item.target || "Belum diisi"),
+    collected: yabisaText(item.collected || "Belum diisi"),
     percent: Math.max(0, Math.min(100, Number(item.percent) || 0)),
     image: yabisaSafeUrl(item.image, base.campaigns[0].image),
     desc: yabisaText(item.desc || "")
@@ -233,3 +233,5 @@ function yabisaWhatsAppLink(message, data = yabisaLoadCms()) {
   const phone = yabisaCleanPhone(data.settings?.whatsapp);
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
+
+

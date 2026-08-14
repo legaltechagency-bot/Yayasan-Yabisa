@@ -1,4 +1,4 @@
-function cmsEl(tag, className, text) {
+﻿function cmsEl(tag, className, text) {
   const el = document.createElement(tag);
   if (className) el.className = className;
   if (text !== undefined) el.textContent = yabisaText(text);
@@ -39,8 +39,9 @@ function renderCampaignCard(campaign) {
   meta.append(cmsEl("span", "", `Terkumpul ${campaign.collected}`));
   meta.append(cmsEl("strong", "", `${campaign.percent}%`));
   body.append(meta);
-  const donate = cmsButtonLink("Donasi Sekarang", "#", "btn btn-primary");
-  donate.dataset.wa = "";
+  const donate = cmsEl("button", "btn btn-primary", "Donasi Sekarang");
+  donate.type = "button";
+  donate.dataset.openDonate = "";
   body.append(donate, document.createTextNode(" "), cmsButtonLink("Lihat Detail", `detail-campaign.html?id=${encodeURIComponent(campaign.id)}`, "btn btn-light"));
   card.append(body);
   return card;
@@ -213,3 +214,5 @@ document.addEventListener("DOMContentLoaded", () => {
   updateWhatsAppLinks?.();
   refreshReveal?.();
 });
+
+

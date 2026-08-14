@@ -1,4 +1,4 @@
-const KEY = YABISA_CMS_KEY;
+﻿const KEY = YABISA_CMS_KEY;
 const defaults = YABISA_DEFAULTS;
 let data = yabisaLoadCms();
 let editState = { type: null, index: -1 };
@@ -300,3 +300,5 @@ renderAll();
 try {
   localStorage.setItem(KEY, JSON.stringify(yabisaNormalizeData(data)));
 } catch {}
+
+

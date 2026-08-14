@@ -1,7 +1,7 @@
-{
+﻿{
   "name": "Admin Yayasan Bukit Cahaya Indonesia",
   "short_name": "Admin YABISA",
-  "description": "Dashboard admin prototype untuk mengelola konten website Yayasan Bukit Cahaya Indonesia.",
+  "description": "Dashboard admin untuk mengelola konten website Yayasan Bukit Cahaya Indonesia.",
   "start_url": "./admin.html",
   "scope": "./",
   "display": "standalone",
@@ -22,3 +22,5 @@
     }
   ]
 }
+
+
