@@ -239,7 +239,7 @@ async function yabisaLoadCmsRemote() {
   const config = yabisaSupabaseConfig();
   if (!config) return null;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 1800);
+  const timeout = setTimeout(() => controller.abort(), 8000);
   const response = await fetch(`${config.url}/rest/v1/yabisa_cms?id=eq.main&select=data`, {
     headers: {
       apikey: config.publishableKey,
