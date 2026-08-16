@@ -13,8 +13,8 @@
   <link rel="stylesheet" href="admin.css">
   <script src="admin-auth.js"></script>
   <script>window.YabisaAdminAuth?.redirectIfLoggedIn();</script>
-  <script src="firebase-config.js"></script>
-  <script type="module" src="admin-firebase.js"></script>
+  <script src="supabase-config.js"></script>
+  <script type="module" src="admin-supabase.js"></script>
 </head>
 <body class="auth-page">
   <main class="auth-shell">
@@ -63,9 +63,9 @@
 
       <div class="auth-divider"><span>atau</span></div>
       <button class="btn btn-light google-btn" type="button" id="googleLogin">
-        <span>G</span> <strong data-google-text>Login melalui akun Google</strong>
+        <span>G</span> <strong data-google-text>Login Supabase belum dikonfigurasi</strong>
       </button>
-      <p class="auth-note">Login Google memakai Firebase Authentication resmi. Tombol aktif setelah konfigurasi Firebase dan domain website ditambahkan ke Authorized domains.</p>
+      <p class="auth-note">Login Google memakai Supabase Auth resmi. Tombol aktif setelah publishable key diisi dan Google provider dikonfigurasi di dashboard Supabase.</p>
     </section>
   </main>
   <div class="toast"></div>
