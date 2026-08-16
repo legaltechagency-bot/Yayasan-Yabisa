@@ -1,4 +1,4 @@
-const ADMIN_CACHE = "yabisa-admin-v6";
+const ADMIN_CACHE = "yabisa-admin-v7";
 const ADMIN_ASSETS = [
   "./admin-login.html",
   "./admin.html",

@@ -36,9 +36,17 @@ async function syncSupabaseSession() {
 }
 
 if (configured) {
-  syncSupabaseSession().then(user => {
-    if (user && location.pathname.endsWith("admin-login.html")) location.href = "admin.html";
-  });
+  if (window.YabisaAdminAuth?.isLogoutPending?.()) {
+    supabase.auth.signOut()
+      .finally(() => {
+        window.YabisaAdminAuth?.clearSupabaseStorage?.();
+        window.YabisaAdminAuth?.clearLogoutPending?.();
+      });
+  } else {
+    syncSupabaseSession().then(user => {
+      if (user && location.pathname.endsWith("admin-login.html")) location.href = "admin.html";
+    });
+  }
 }
 
 window.yabisaSupabaseSignUp = async function yabisaSupabaseSignUp({ name, email, password }) {
@@ -79,5 +87,5 @@ window.yabisaSupabaseSignIn = async function yabisaSupabaseSignIn({ email, passw
 
 window.yabisaSupabaseSignOut = async function yabisaSupabaseSignOut() {
   if (!supabase) return;
-  await supabase.auth.signOut();
+  await supabase.auth.signOut({ scope: "local" });
 };

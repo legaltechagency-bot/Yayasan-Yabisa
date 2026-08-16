@@ -1,4 +1,5 @@
 const YABISA_ADMIN_SESSION_KEY = "yabisaAdminSession";
+const YABISA_ADMIN_LOGOUT_KEY = "yabisaAdminLogoutPending";
 
 function adminAuthToast(message, ok = true) {
   const toast = document.querySelector(".toast");
@@ -23,7 +24,7 @@ function adminWriteJson(key, value) {
 
 function adminIsLoggedIn() {
   const session = adminReadJson(YABISA_ADMIN_SESSION_KEY);
-  return Boolean(session?.loggedIn && session?.createdAt);
+  return !adminIsLogoutPending() && Boolean(session?.loggedIn && session?.createdAt);
 }
 
 function adminRequireLogin() {
@@ -34,7 +35,32 @@ function adminRedirectIfLoggedIn() {
   if (adminIsLoggedIn()) location.replace("admin.html");
 }
 
+function adminIsLogoutPending() {
+  return localStorage.getItem(YABISA_ADMIN_LOGOUT_KEY) === "1";
+}
+
+function adminSetLogoutPending() {
+  localStorage.setItem(YABISA_ADMIN_LOGOUT_KEY, "1");
+}
+
+function adminClearLogoutPending() {
+  localStorage.removeItem(YABISA_ADMIN_LOGOUT_KEY);
+}
+
+function adminClearSupabaseStorage() {
+  const clearFrom = storage => {
+    if (!storage) return;
+    Object.keys(storage).forEach(key => {
+      const lower = key.toLowerCase();
+      if (lower.startsWith("sb-") || lower.includes("supabase")) storage.removeItem(key);
+    });
+  };
+  clearFrom(localStorage);
+  clearFrom(sessionStorage);
+}
+
 function adminLogin(identity) {
+  adminClearLogoutPending();
   adminWriteJson(YABISA_ADMIN_SESSION_KEY, {
     loggedIn: true,
     name: identity.name || identity.email || "Admin YABISA",
@@ -45,11 +71,13 @@ function adminLogin(identity) {
 }
 
 async function adminLogout() {
+  adminSetLogoutPending();
   try {
     await window.yabisaSupabaseSignOut?.();
   } finally {
     localStorage.removeItem(YABISA_ADMIN_SESSION_KEY);
-    location.href = "admin-login.html";
+    adminClearSupabaseStorage();
+    location.replace("admin-login.html?logged_out=1");
   }
 }
 
@@ -62,5 +90,8 @@ window.YabisaAdminAuth = {
   redirectIfLoggedIn: adminRedirectIfLoggedIn,
   login: adminLogin,
   logout: adminLogout,
+  isLogoutPending: adminIsLogoutPending,
+  clearLogoutPending: adminClearLogoutPending,
+  clearSupabaseStorage: adminClearSupabaseStorage,
   currentUser: adminGetCurrentUser
 };
