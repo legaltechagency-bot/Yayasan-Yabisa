@@ -290,7 +290,7 @@ document.querySelector("#importData")?.addEventListener("change", e => {
 });
 
 document.querySelector("#resetData")?.addEventListener("click", () => {
-  if (!confirm("Kembalikan ke data contoh?")) return;
+  if (!confirm("Kembalikan ke data awal?")) return;
   data = yabisaClone(defaults);
   save();
 });

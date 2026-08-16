@@ -147,7 +147,7 @@ function renderDetailArticle(data) {
   document.querySelectorAll("[data-article-excerpt]").forEach(el => el.textContent = article.excerpt);
   document.querySelectorAll("[data-article-image]").forEach(el => { el.src = article.image; el.alt = article.title; });
   document.querySelectorAll("[data-article-content]").forEach(el => {
-    el.innerHTML = yabisaSanitizeHtml(article.content || article.excerpt || "Konten artikel belum tersedia.");
+    el.innerHTML = yabisaSanitizeHtml(article.content || article.excerpt || "Informasi artikel sedang dimuat.");
   });
 }
 
