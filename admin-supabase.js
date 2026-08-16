@@ -89,3 +89,9 @@ window.yabisaSupabaseSignOut = async function yabisaSupabaseSignOut() {
   if (!supabase) return;
   await supabase.auth.signOut({ scope: "local" });
 };
+
+window.yabisaSupabaseGetAccessToken = async function yabisaSupabaseGetAccessToken() {
+  if (!supabase) return "";
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token || "";
+};

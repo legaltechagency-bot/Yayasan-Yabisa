@@ -196,8 +196,8 @@ function applyCampaignFilterFromUrl() {
   if (button) button.click();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const cms = yabisaLoadCms();
+document.addEventListener("DOMContentLoaded", async () => {
+  const cms = typeof yabisaLoadCmsAsync === "function" ? await yabisaLoadCmsAsync() : yabisaLoadCms();
   replaceGrid("#campaignGrid", cms.campaigns, renderCampaignCard);
   replaceGrid("#programGrid", cms.programs, renderProgramCard);
   replaceGrid("#galleryGrid", cms.gallery, renderGalleryCard);

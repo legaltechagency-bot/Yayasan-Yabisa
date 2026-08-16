@@ -229,6 +229,63 @@ function yabisaLoadCms() {
   }
 }
 
+function yabisaSupabaseConfig() {
+  const config = window.YABISA_SUPABASE_CONFIG || {};
+  if (!config.url || !config.publishableKey) return null;
+  return config;
+}
+
+async function yabisaLoadCmsRemote() {
+  const config = yabisaSupabaseConfig();
+  if (!config) return null;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1800);
+  const response = await fetch(`${config.url}/rest/v1/yabisa_cms?id=eq.main&select=data`, {
+    headers: {
+      apikey: config.publishableKey,
+      Authorization: `Bearer ${config.publishableKey}`
+    },
+    signal: controller.signal
+  }).finally(() => clearTimeout(timeout));
+  if (!response.ok) throw new Error(`Supabase read failed (${response.status})`);
+  const rows = await response.json();
+  return rows?.[0]?.data ? yabisaNormalizeData(rows[0].data) : null;
+}
+
+async function yabisaLoadCmsAsync() {
+  try {
+    const remote = await yabisaLoadCmsRemote();
+    if (remote) {
+      localStorage.setItem(YABISA_CMS_KEY, JSON.stringify(remote));
+      return remote;
+    }
+  } catch (error) {
+    console.warn("YABISA CMS Supabase load failed, using local fallback.", error);
+  }
+  return yabisaLoadCms();
+}
+
+async function yabisaSaveCmsRemote(nextData) {
+  const normalized = yabisaNormalizeData(nextData);
+  localStorage.setItem(YABISA_CMS_KEY, JSON.stringify(normalized));
+  const config = yabisaSupabaseConfig();
+  if (!config) return normalized;
+  const accessToken = await window.yabisaSupabaseGetAccessToken?.();
+  if (!accessToken) throw new Error("Sesi admin Supabase tidak ditemukan");
+  const response = await fetch(`${config.url}/rest/v1/yabisa_cms`, {
+    method: "POST",
+    headers: {
+      apikey: config.publishableKey,
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=minimal"
+    },
+    body: JSON.stringify({ id: "main", data: normalized, updated_at: new Date().toISOString() })
+  });
+  if (!response.ok) throw new Error(`Supabase save failed (${response.status})`);
+  return normalized;
+}
+
 function yabisaWhatsAppLink(message, data = yabisaLoadCms()) {
   const phone = yabisaCleanPhone(data.settings?.whatsapp);
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;

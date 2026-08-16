@@ -3,6 +3,7 @@ const defaults = YABISA_DEFAULTS;
 let data = yabisaLoadCms();
 let editState = { type: null, index: -1 };
 const pendingGalleryImages = [];
+let cmsReady = false;
 
 function toast(msg, ok = true) {
   const el = document.querySelector(".toast");
@@ -13,16 +14,17 @@ function toast(msg, ok = true) {
   setTimeout(() => el.classList.remove("show"), 2600);
 }
 
-function save() {
+async function save() {
   const next = yabisaNormalizeData(data);
   try {
-    localStorage.setItem(KEY, JSON.stringify(next));
-    data = next;
+    data = typeof yabisaSaveCmsRemote === "function" ? await yabisaSaveCmsRemote(next) : next;
+    if (typeof yabisaSaveCmsRemote !== "function") localStorage.setItem(KEY, JSON.stringify(next));
     toast("Data berhasil disimpan.");
     renderAll();
     return true;
   } catch (error) {
-    toast("Gagal menyimpan. Kapasitas penyimpanan browser tidak mencukupi. Gunakan gambar lebih kecil atau hapus data yang tidak diperlukan.", false);
+    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch {}
+    toast(`Gagal menyimpan ke Supabase: ${error.message || "periksa koneksi dan izin admin"}. Data tetap disimpan sementara di browser ini.`, false);
     return false;
   }
 }
@@ -207,10 +209,10 @@ function editItem(type, index) {
   }, 350);
 }
 
-function deleteItem(type, index) {
+async function deleteItem(type, index) {
   if (!confirm("Hapus data ini?")) return;
   data[type].splice(index, 1);
-  save();
+  await save();
 }
 
 function itemWithId(item) {
@@ -231,13 +233,13 @@ function validateImport(raw) {
 
 document.querySelectorAll("[data-panel]").forEach(btn => btn.addEventListener("click", () => setPanel(btn.dataset.panel)));
 
-document.querySelectorAll("form[data-form]").forEach(form => form.addEventListener("submit", e => {
+document.querySelectorAll("form[data-form]").forEach(form => form.addEventListener("submit", async e => {
   e.preventDefault();
   const type = form.dataset.form;
   if (type === "settings") {
     const previous = yabisaClone(data);
     data.settings = readFields(form);
-    if (!save()) data = previous;
+    if (!await save()) data = previous;
     return;
   }
   const map = { campaign: "campaigns", program: "programs", article: "articles", gallery: "gallery", video: "videos" };
@@ -256,7 +258,7 @@ document.querySelectorAll("form[data-form]").forEach(form => form.addEventListen
     item.images = [...pendingGalleryImages];
   }
   if (editState.type === list && editState.index > -1) data[list][editState.index] = item; else data[list].push(item);
-  if (save()) clearForm(type); else data = previous;
+  if (await save()) clearForm(type); else data = previous;
   if (type === "gallery") pendingGalleryImages.length = 0;
 }));
 
@@ -278,7 +280,7 @@ document.querySelector("#importData")?.addEventListener("change", e => {
   reader.onload = () => {
     try {
       data = validateImport(reader.result);
-      if (!save()) data = oldData;
+      save().then(ok => { if (!ok) data = oldData; });
     } catch (error) {
       data = oldData;
       toast(`Impor gagal: ${error.message}`, false);
@@ -289,10 +291,10 @@ document.querySelector("#importData")?.addEventListener("change", e => {
   reader.readAsText(file);
 });
 
-document.querySelector("#resetData")?.addEventListener("click", () => {
+document.querySelector("#resetData")?.addEventListener("click", async () => {
   if (!confirm("Kembalikan ke data awal?")) return;
   data = yabisaClone(defaults);
-  save();
+  await save();
 });
 
 document.querySelector("#logoutAdmin")?.addEventListener("click", async event => {
@@ -306,8 +308,19 @@ document.querySelector("#logoutAdmin")?.addEventListener("click", async event =>
 
 setupImageUploads();
 renderAll();
-try {
-  localStorage.setItem(KEY, JSON.stringify(yabisaNormalizeData(data)));
-} catch {}
+
+(async function bootstrapAdminCms() {
+  try {
+    data = typeof yabisaLoadCmsAsync === "function" ? await yabisaLoadCmsAsync() : yabisaLoadCms();
+    cmsReady = true;
+    renderAll();
+    const remote = await yabisaLoadCmsRemote?.().catch(() => null);
+    if (!remote) await save();
+  } catch (error) {
+    cmsReady = true;
+    toast(`Data Supabase belum dapat dimuat: ${error.message || "gunakan data lokal sementara"}.`, false);
+    renderAll();
+  }
+})();
 
 
