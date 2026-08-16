@@ -1,7 +1,9 @@
-﻿const ADMIN_CACHE = "yabisa-admin-v3";
+const ADMIN_CACHE = "yabisa-admin-v4";
 const ADMIN_ASSETS = [
+  "./admin-login.html",
   "./admin.html",
   "./admin.css",
+  "./admin-auth.js",
   "./admin.js",
   "./yabisa-data.js",
   "./admin-manifest.json",
@@ -11,17 +13,25 @@ const ADMIN_ASSETS = [
 ];
 
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(ADMIN_CACHE).then(cache => cache.addAll(ADMIN_ASSETS)));
+  event.waitUntil(
+    caches.open(ADMIN_CACHE)
+      .then(cache => cache.addAll(ADMIN_ASSETS))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== ADMIN_CACHE).map(key => caches.delete(key))))
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key.startsWith("yabisa-admin-") && key !== ADMIN_CACHE).map(key => caches.delete(key))))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener("fetch", event => {
-  if (!event.request.url.includes("admin") && !event.request.url.includes("yabisa-data") && !event.request.url.includes("logo-yabisa") && !event.request.url.includes("admin-icon")) return;
+  const url = new URL(event.request.url);
+  const isAdminAsset = url.pathname.includes("admin") || url.pathname.includes("yabisa-data") || url.pathname.includes("logo-yabisa") || url.pathname.includes("admin-icon");
+  if (!isAdminAsset) return;
   event.respondWith(
     fetch(event.request)
       .then(response => {
@@ -32,5 +42,3 @@ self.addEventListener("fetch", event => {
       .catch(() => caches.match(event.request))
   );
 });
-
-

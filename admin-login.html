@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Admin - Yayasan Bukit Cahaya Indonesia</title>
+  <link rel="icon" href="images/logo-yabisa.jpeg">
+  <link rel="manifest" href="admin-manifest.json">
+  <meta name="theme-color" content="#1f6f35">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin-auth.js"></script>
+  <script>window.YabisaAdminAuth?.redirectIfLoggedIn();</script>
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <section class="auth-card">
+      <div class="auth-brand">
+        <img src="images/logo-yabisa.jpeg" alt="Logo YABISA">
+        <div>
+          <span>Dashboard Admin</span>
+          <h1>Yayasan Bukit Cahaya Indonesia</h1>
+        </div>
+      </div>
+
+      <div class="auth-tabs" role="tablist" aria-label="Pilih akses admin">
+        <button class="active" type="button" data-auth-tab="login">Login</button>
+        <button type="button" data-auth-tab="register">Daftar</button>
+      </div>
+
+      <form class="auth-form active" id="loginForm">
+        <label>Email admin
+          <input required type="email" name="email" autocomplete="username" placeholder="admin@yabisa.org">
+        </label>
+        <label>Password
+          <div class="password-wrap">
+            <input required type="password" name="password" autocomplete="current-password" placeholder="Masukkan password">
+            <button type="button" data-toggle-password>Tampilkan</button>
+          </div>
+        </label>
+        <button class="btn btn-primary auth-submit" type="submit">Login</button>
+      </form>
+
+      <form class="auth-form" id="registerForm">
+        <label>Nama admin
+          <input required name="name" autocomplete="name" placeholder="Nama lengkap">
+        </label>
+        <label>Email admin
+          <input required type="email" name="email" autocomplete="username" placeholder="admin@yabisa.org">
+        </label>
+        <label>Password
+          <div class="password-wrap">
+            <input required minlength="6" type="password" name="password" autocomplete="new-password" placeholder="Minimal 6 karakter">
+            <button type="button" data-toggle-password>Tampilkan</button>
+          </div>
+        </label>
+        <button class="btn btn-primary auth-submit" type="submit">Daftar</button>
+      </form>
+
+      <div class="auth-divider"><span>atau</span></div>
+      <button class="btn btn-light google-btn" type="button" id="googleLogin">
+        <span>G</span> Login melalui akun Google
+      </button>
+      <p class="auth-note">Login Google pada prototype ini adalah mode demo lokal. Untuk login Google resmi dibutuhkan konfigurasi OAuth saat website masuk tahap produksi.</p>
+    </section>
+  </main>
+  <div class="toast"></div>
+  <script>
+    const userKey = "yabisaAdminUser";
+    const tabs = document.querySelectorAll("[data-auth-tab]");
+    const forms = { login: document.querySelector("#loginForm"), register: document.querySelector("#registerForm") };
+
+    function readUser() {
+      try { return JSON.parse(localStorage.getItem(userKey) || "null"); } catch { return null; }
+    }
+
+    tabs.forEach(tab => tab.addEventListener("click", () => {
+      tabs.forEach(item => item.classList.toggle("active", item === tab));
+      Object.entries(forms).forEach(([key, form]) => form.classList.toggle("active", key === tab.dataset.authTab));
+    }));
+
+    document.querySelectorAll("[data-toggle-password]").forEach(button => {
+      button.addEventListener("click", () => {
+        const input = button.parentElement.querySelector("input");
+        const visible = input.type === "text";
+        input.type = visible ? "password" : "text";
+        button.textContent = visible ? "Tampilkan" : "Sembunyikan";
+      });
+    });
+
+    forms.register.addEventListener("submit", event => {
+      event.preventDefault();
+      const form = new FormData(forms.register);
+      const user = {
+        name: String(form.get("name") || "").trim(),
+        email: String(form.get("email") || "").trim().toLowerCase(),
+        password: String(form.get("password") || "")
+      };
+      if (user.password.length < 6) return adminAuthToast("Password minimal 6 karakter.", false);
+      localStorage.setItem(userKey, JSON.stringify(user));
+      window.YabisaAdminAuth.login({ name: user.name, email: user.email, provider: "email" });
+      adminAuthToast("Akun admin berhasil dibuat.");
+      setTimeout(() => location.href = "admin.html", 500);
+    });
+
+    forms.login.addEventListener("submit", event => {
+      event.preventDefault();
+      const saved = readUser();
+      const form = new FormData(forms.login);
+      const email = String(form.get("email") || "").trim().toLowerCase();
+      const password = String(form.get("password") || "");
+      if (!saved) return adminAuthToast("Belum ada akun admin. Silakan daftar terlebih dahulu.", false);
+      if (saved.email !== email || saved.password !== password) return adminAuthToast("Email atau password tidak sesuai.", false);
+      window.YabisaAdminAuth.login({ name: saved.name, email: saved.email, provider: "email" });
+      adminAuthToast("Login berhasil.");
+      setTimeout(() => location.href = "admin.html", 500);
+    });
+
+    document.querySelector("#googleLogin").addEventListener("click", () => {
+      window.YabisaAdminAuth.login({ name: "Admin YABISA", email: "admin.google@yabisa.local", provider: "google-demo" });
+      adminAuthToast("Login Google demo berhasil.");
+      setTimeout(() => location.href = "admin.html", 500);
+    });
+
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      navigator.serviceWorker.register("admin-sw.js");
+    }
+  </script>
+</body>
+</html>

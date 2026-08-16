@@ -11,6 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css">
+  <script src="admin-auth.js"></script>
+  <script>window.YabisaAdminAuth?.require();</script>
 </head>
 <body>
   <div class="admin-shell">
@@ -28,7 +30,7 @@
     <main class="main">
       <div class="topbar">
         <div><h2>Dashboard Admin</h2><p class="muted">Dashboard admin ini membantu mengelola konten website melalui penyimpanan browser lokal.</p></div>
-        <div class="actions"><button class="btn btn-gold" id="exportData">Ekspor JSON</button><label class="btn btn-light">Impor JSON<input id="importData" type="file" accept=".json" hidden></label><button class="btn btn-light" id="resetData">Reset Data Awal</button></div>
+        <div class="actions"><button class="btn btn-gold" id="exportData">Ekspor JSON</button><label class="btn btn-light">Impor JSON<input id="importData" type="file" accept=".json" hidden></label><button class="btn btn-light" id="resetData">Reset Data Awal</button><button class="btn btn-light" id="logoutAdmin" type="button">Logout</button></div>
       </div>
 
       <section class="panel active" id="dashboard">

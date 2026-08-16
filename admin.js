@@ -295,6 +295,10 @@ document.querySelector("#resetData")?.addEventListener("click", () => {
   save();
 });
 
+document.querySelector("#logoutAdmin")?.addEventListener("click", () => {
+  window.YabisaAdminAuth?.logout();
+});
+
 setupImageUploads();
 renderAll();
 try {
