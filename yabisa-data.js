@@ -189,7 +189,7 @@ function yabisaNormalizeData(raw) {
     const group = groupedGallery.get(key);
     [...(item.images || []), item.image].forEach(src => {
       const safe = yabisaSafeUrl(src, base.gallery[0].image);
-      if (safe && !group.images.includes(safe) && group.images.length < 5) group.images.push(safe);
+      if (safe && !group.images.includes(safe) && group.images.length < 6) group.images.push(safe);
     });
     group.image = group.images[0] || item.image;
   });
