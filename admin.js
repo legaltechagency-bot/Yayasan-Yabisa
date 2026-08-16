@@ -61,7 +61,7 @@ function setupImageUploads() {
         if (input.dataset.imageUpload === "gallery") pendingGalleryImages.length = 0;
         toast(message, false);
       };
-      if (input.dataset.imageUpload === "gallery" && files.length > 5) return clearUpload("Upload ditolak. Galery maksimal 5 foto dalam sekali upload.");
+      if (input.dataset.imageUpload === "gallery" && files.length > 6) return clearUpload("Upload ditolak. Galery maksimal 6 foto dalam sekali upload.");
       if (files.some(file => !allowed.includes(file.type))) return clearUpload("Upload ditolak. Format gambar harus JPG, PNG, WEBP, atau GIF.");
       if (files.some(file => file.size > 900000)) return clearUpload("Upload ditolak. Setiap gambar maksimal sekitar 900 KB agar data dapat tersimpan dan tampil di website.");
       const readFile = file => new Promise((resolve, reject) => {

@@ -176,7 +176,7 @@ function yabisaNormalizeData(raw) {
     title: yabisaText(item.title || "Dokumentasi Kegiatan"),
     tag: yabisaText(item.tag || "Dokumentasi"),
     image: yabisaSafeUrl(item.image || item.images?.[0], base.gallery[0].image),
-    images: Array.isArray(item.images) && item.images.length ? item.images.slice(0, 5).map(src => yabisaSafeUrl(src, base.gallery[0].image)) : [yabisaSafeUrl(item.image, base.gallery[0].image)],
+    images: Array.isArray(item.images) && item.images.length ? item.images.slice(0, 6).map(src => yabisaSafeUrl(src, base.gallery[0].image)) : [yabisaSafeUrl(item.image, base.gallery[0].image)],
     desc: yabisaText(item.desc || "")
   }));
   const groupedGallery = new Map();
