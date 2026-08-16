@@ -94,6 +94,29 @@ function renderArticleCard(article) {
   return card;
 }
 
+function cmsArticleTime(article, index) {
+  const raw = yabisaText(article.date).trim();
+  const direct = Date.parse(raw);
+  if (!Number.isNaN(direct)) return direct;
+  const months = {
+    januari: 0, februari: 1, maret: 2, april: 3, mei: 4, juni: 5,
+    juli: 6, agustus: 7, september: 8, oktober: 9, november: 10, desember: 11
+  };
+  const match = raw.toLowerCase().match(/(\d{1,2})\s+([a-z]+)\s+(\d{4})/);
+  if (match && months[match[2]] !== undefined) {
+    return new Date(Number(match[3]), months[match[2]], Number(match[1])).getTime();
+  }
+  return -index;
+}
+
+function sortArticlesLatest(articles) {
+  return [...(articles || [])].sort((a, b) => {
+    const timeDiff = cmsArticleTime(b, 0) - cmsArticleTime(a, 0);
+    if (timeDiff) return timeDiff;
+    return (articles || []).indexOf(b) - (articles || []).indexOf(a);
+  });
+}
+
 function renderVideoCard(video) {
   const card = cmsEl("article", "card video-card reveal");
   const link = cmsButtonLink("", video.url, "video-thumb");
@@ -201,7 +224,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   replaceGrid("#campaignGrid", cms.campaigns, renderCampaignCard);
   replaceGrid("#programGrid", cms.programs, renderProgramCard);
   replaceGrid("#galleryGrid", cms.gallery, renderGalleryCard);
-  replaceGrid("#artikelGrid", cms.articles, renderArticleCard);
+  document.querySelectorAll("#artikelGrid").forEach(grid => {
+    const latest = sortArticlesLatest(cms.articles);
+    const limit = Number(grid.dataset.homeLatest || 0);
+    const items = limit ? latest.slice(0, limit) : latest;
+    grid.replaceChildren(...items.map(renderArticleCard));
+  });
   replaceGrid("#videoGrid", cms.videos, renderVideoCard);
   document.querySelectorAll("[data-video-section]").forEach(section => {
     section.style.display = cms.videos?.length ? "" : "none";
