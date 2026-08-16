@@ -63,7 +63,7 @@
 
       <div class="auth-divider"><span>atau</span></div>
       <button class="btn btn-light google-btn" type="button" id="googleLogin">
-        <span>G</span> <strong data-google-text>Login Supabase belum dikonfigurasi</strong>
+        <span>G</span> <strong data-google-text>Login melalui akun Google</strong>
       </button>
       <p class="auth-note">Login Google memakai Supabase Auth resmi. Tombol aktif setelah publishable key diisi dan Google provider dikonfigurasi di dashboard Supabase.</p>
     </section>
@@ -121,7 +121,8 @@
     });
 
     document.querySelector("#googleLogin").addEventListener("click", () => {
-      window.yabisaGoogleSignIn?.();
+      if (typeof window.yabisaGoogleSignIn === "function") window.yabisaGoogleSignIn();
+      else adminAuthToast("Modul Supabase belum termuat. Periksa koneksi internet atau konfigurasi deploy.", false);
     });
 
     if ("serviceWorker" in navigator && location.protocol !== "file:") {
