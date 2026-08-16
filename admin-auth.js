@@ -44,10 +44,13 @@ function adminLogin(identity) {
   });
 }
 
-function adminLogout() {
-  window.yabisaSupabaseSignOut?.();
-  localStorage.removeItem(YABISA_ADMIN_SESSION_KEY);
-  location.href = "admin-login.html";
+async function adminLogout() {
+  try {
+    await window.yabisaSupabaseSignOut?.();
+  } finally {
+    localStorage.removeItem(YABISA_ADMIN_SESSION_KEY);
+    location.href = "admin-login.html";
+  }
 }
 
 function adminGetCurrentUser() {

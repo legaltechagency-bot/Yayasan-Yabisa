@@ -295,8 +295,13 @@ document.querySelector("#resetData")?.addEventListener("click", () => {
   save();
 });
 
-document.querySelector("#logoutAdmin")?.addEventListener("click", () => {
-  window.YabisaAdminAuth?.logout();
+document.querySelector("#logoutAdmin")?.addEventListener("click", async event => {
+  const button = event.currentTarget;
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Logout...";
+  }
+  await window.YabisaAdminAuth?.logout();
 });
 
 setupImageUploads();
