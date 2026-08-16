@@ -4,17 +4,23 @@ const config = window.YABISA_SUPABASE_CONFIG || {};
 const configured = Boolean(config.url && config.publishableKey);
 const supabase = configured ? createClient(config.url, config.publishableKey) : null;
 
-function redirectUrl() {
-  return new URL("admin-login.html", location.href).href;
+function userName(user) {
+  return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "Admin YABISA";
 }
 
-function setGoogleButton(message, disabled = false) {
-  const button = document.querySelector("#googleLogin");
-  if (!button) return;
-  button.disabled = disabled;
-  button.dataset.ready = configured ? "true" : "false";
-  const text = button.querySelector("[data-google-text]");
-  if (text) text.textContent = message;
+function saveSupabaseSession(user) {
+  if (!user) return;
+  window.YabisaAdminAuth?.login({
+    name: userName(user),
+    email: user.email || "",
+    provider: "supabase-email"
+  });
+}
+
+function requireSupabase() {
+  if (supabase) return true;
+  adminAuthToast("Supabase belum aktif. Periksa supabase-config.js.", false);
+  return false;
 }
 
 async function syncSupabaseSession() {
@@ -25,43 +31,50 @@ async function syncSupabaseSession() {
     return null;
   }
   const user = data.session?.user;
-  if (!user) return null;
-  window.YabisaAdminAuth?.login({
-    name: user.user_metadata?.full_name || user.user_metadata?.name || user.email || "Admin YABISA",
-    email: user.email || "",
-    provider: "supabase-google"
-  });
-  return user;
+  if (user) saveSupabaseSession(user);
+  return user || null;
 }
 
 if (configured) {
-  setGoogleButton("Login melalui akun Google");
   syncSupabaseSession().then(user => {
     if (user && location.pathname.endsWith("admin-login.html")) location.href = "admin.html";
   });
-} else {
-  setGoogleButton("Login Supabase belum dikonfigurasi");
 }
 
-window.yabisaGoogleSignIn = async function yabisaGoogleSignIn() {
-  if (!supabase) {
-    adminAuthToast("Login Supabase belum aktif. Isi publishableKey di supabase-config.js terlebih dahulu.", false);
-    return;
-  }
-  setGoogleButton("Menghubungkan ke Google...", true);
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
+window.yabisaSupabaseSignUp = async function yabisaSupabaseSignUp({ name, email, password }) {
+  if (!requireSupabase()) return false;
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
     options: {
-      redirectTo: redirectUrl(),
-      queryParams: {
-        prompt: "select_account"
-      }
+      data: { full_name: name }
     }
   });
   if (error) {
-    adminAuthToast(`Login Google gagal: ${error.message}`, false);
-    setGoogleButton("Login melalui akun Google", false);
+    adminAuthToast(`Daftar gagal: ${error.message}`, false);
+    return false;
   }
+  if (data.session?.user) {
+    saveSupabaseSession(data.session.user);
+    adminAuthToast("Akun admin berhasil dibuat.");
+    setTimeout(() => location.href = "admin.html", 500);
+    return true;
+  }
+  adminAuthToast("Akun dibuat. Silakan cek email untuk konfirmasi, lalu login kembali.");
+  return true;
+};
+
+window.yabisaSupabaseSignIn = async function yabisaSupabaseSignIn({ email, password }) {
+  if (!requireSupabase()) return false;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    adminAuthToast(`Login gagal: ${error.message}`, false);
+    return false;
+  }
+  saveSupabaseSession(data.user);
+  adminAuthToast("Login berhasil.");
+  setTimeout(() => location.href = "admin.html", 500);
+  return true;
 };
 
 window.yabisaSupabaseSignOut = async function yabisaSupabaseSignOut() {

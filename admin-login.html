@@ -61,22 +61,13 @@
         <button class="btn btn-primary auth-submit" type="submit">Daftar</button>
       </form>
 
-      <div class="auth-divider"><span>atau</span></div>
-      <button class="btn btn-light google-btn" type="button" id="googleLogin">
-        <span>G</span> <strong data-google-text>Login melalui akun Google</strong>
-      </button>
-      <p class="auth-note">Login Google memakai Supabase Auth resmi. Tombol aktif setelah publishable key diisi dan Google provider dikonfigurasi di dashboard Supabase.</p>
+      <p class="auth-note">Akun admin dibuat dan diverifikasi melalui Supabase Auth. Password tidak disimpan di browser website.</p>
     </section>
   </main>
   <div class="toast"></div>
   <script>
-    const userKey = "yabisaAdminUser";
     const tabs = document.querySelectorAll("[data-auth-tab]");
     const forms = { login: document.querySelector("#loginForm"), register: document.querySelector("#registerForm") };
-
-    function readUser() {
-      try { return JSON.parse(localStorage.getItem(userKey) || "null"); } catch { return null; }
-    }
 
     tabs.forEach(tab => tab.addEventListener("click", () => {
       tabs.forEach(item => item.classList.toggle("active", item === tab));
@@ -92,7 +83,7 @@
       });
     });
 
-    forms.register.addEventListener("submit", event => {
+    forms.register.addEventListener("submit", async event => {
       event.preventDefault();
       const form = new FormData(forms.register);
       const user = {
@@ -101,28 +92,17 @@
         password: String(form.get("password") || "")
       };
       if (user.password.length < 6) return adminAuthToast("Password minimal 6 karakter.", false);
-      localStorage.setItem(userKey, JSON.stringify(user));
-      window.YabisaAdminAuth.login({ name: user.name, email: user.email, provider: "email" });
-      adminAuthToast("Akun admin berhasil dibuat.");
-      setTimeout(() => location.href = "admin.html", 500);
+      if (typeof window.yabisaSupabaseSignUp !== "function") return adminAuthToast("Modul Supabase belum termuat. Periksa koneksi internet atau konfigurasi deploy.", false);
+      await window.yabisaSupabaseSignUp(user);
     });
 
-    forms.login.addEventListener("submit", event => {
+    forms.login.addEventListener("submit", async event => {
       event.preventDefault();
-      const saved = readUser();
       const form = new FormData(forms.login);
       const email = String(form.get("email") || "").trim().toLowerCase();
       const password = String(form.get("password") || "");
-      if (!saved) return adminAuthToast("Belum ada akun admin. Silakan daftar terlebih dahulu.", false);
-      if (saved.email !== email || saved.password !== password) return adminAuthToast("Email atau password tidak sesuai.", false);
-      window.YabisaAdminAuth.login({ name: saved.name, email: saved.email, provider: "email" });
-      adminAuthToast("Login berhasil.");
-      setTimeout(() => location.href = "admin.html", 500);
-    });
-
-    document.querySelector("#googleLogin").addEventListener("click", () => {
-      if (typeof window.yabisaGoogleSignIn === "function") window.yabisaGoogleSignIn();
-      else adminAuthToast("Modul Supabase belum termuat. Periksa koneksi internet atau konfigurasi deploy.", false);
+      if (typeof window.yabisaSupabaseSignIn !== "function") return adminAuthToast("Modul Supabase belum termuat. Periksa koneksi internet atau konfigurasi deploy.", false);
+      await window.yabisaSupabaseSignIn({ email, password });
     });
 
     if ("serviceWorker" in navigator && location.protocol !== "file:") {

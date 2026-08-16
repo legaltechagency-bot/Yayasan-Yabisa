@@ -1,4 +1,3 @@
-const YABISA_ADMIN_USER_KEY = "yabisaAdminUser";
 const YABISA_ADMIN_SESSION_KEY = "yabisaAdminSession";
 
 function adminAuthToast(message, ok = true) {
