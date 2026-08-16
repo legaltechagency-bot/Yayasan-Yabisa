@@ -1,10 +1,12 @@
-const ADMIN_CACHE = "yabisa-admin-v4";
+const ADMIN_CACHE = "yabisa-admin-v5";
 const ADMIN_ASSETS = [
   "./admin-login.html",
   "./admin.html",
   "./admin.css",
   "./admin-auth.js",
+  "./admin-firebase.js",
   "./admin.js",
+  "./firebase-config.js",
   "./yabisa-data.js",
   "./admin-manifest.json",
   "./images/logo-yabisa.jpeg",

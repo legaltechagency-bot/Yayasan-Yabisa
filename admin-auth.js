@@ -46,6 +46,7 @@ function adminLogin(identity) {
 }
 
 function adminLogout() {
+  window.yabisaFirebaseSignOut?.();
   localStorage.removeItem(YABISA_ADMIN_SESSION_KEY);
   location.href = "admin-login.html";
 }
