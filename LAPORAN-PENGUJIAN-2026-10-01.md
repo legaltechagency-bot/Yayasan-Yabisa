@@ -1,5 +1,24 @@
 # Pengujian YABISA, 1 Oktober 2026
 
+## Pengujian ulang domain resmi
+
+Perbaikan tambahan telah dideploy: filter campaign menggunakan kecocokan kategori persis; form konfirmasi memuat semua campaign CMS dan memilih campaign aktif; nominal minimal 1; pilihan anonim disertakan pada pesan WhatsApp; halaman kembali dari browser Back dipulihkan; klik dengan Ctrl/Shift tidak ditahan oleh transisi; penanganan gambar juga dipasang pada gambar CMS; kartu program/campaign beranda mengikuti CMS dengan template kartu dan batas tampilan yang sama.
+
+Hasil browser setelah CMS selesai dimuat:
+
+- Tujuh halaman utama terbuka tanpa error/warning console yang tertangkap, ID duplikat, atau tautan href kosong (#).
+- Seluruh 20 tautan detail (6 campaign, 6 program, 4 artikel, 4 album) menampilkan judul yang sesuai dan tidak menampilkan undefined/null. Empat album masing-masing berisi 6 foto.
+- Beranda menampilkan 3 artikel terbaru; halaman Artikel menampilkan 4 artikel.
+- Filter Wakaf Al-Qur'an hanya menampilkan kategori wakaf-quran, bukan Braille.
+- Tujuh halaman utama diperiksa pada viewport 390 x 844: tidak ada overflow horizontal; hamburger membuka menu.
+- Beranda dan halaman login diperiksa pada viewport tablet 768 x 1024 tanpa overflow horizontal.
+- Modal donasi terbuka, tombol salin rekening menampilkan notifikasi Berhasil disalin, Escape menutup modal. Nilai clipboard tidak dapat dikonfirmasi melalui alat browser.
+- Form kontak kosong dan form konfirmasi kosong tidak berpindah halaman atau mengirim pesan. Modal konfirmasi Mari Berqurban memuat enam campaign dan memilih Mari Berqurban.
+- Browser Back mengembalikan body ke page-ready tanpa page-leaving.
+- Admin domain resmi tanpa sesi diarahkan ke login. Tombol Tampilkan mengubah input password menjadi text; tab Daftar membuka form pendaftaran.
+
+Enam pengujian otomatis Node lulus. Tidak dilakukan pengiriman pesan WhatsApp, pembuatan akun baru, atau penghapusan/reset data resmi. Pengujian ini tidak menjamin tidak ada bug pada seluruh kombinasi perangkat dan kondisi jaringan; hasil berlaku untuk alur dan viewport yang dicatat.
+
 ## Pembaruan setelah Supabase diaktifkan
 
 Endpoint Supabase kembali normal, status HTTP 200. Data online berisi 6 campaign, 6 program, 4 artikel, 4 album, dan 0 video. Simpan ulang campaign, artikel, program, dan album melalui sesi admin berhasil; timestamp database diperbarui. Semua album tetap memiliki 6 foto setelah edit. Tidak ada konten resmi dihapus atau direset.
