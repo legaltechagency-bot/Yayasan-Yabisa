@@ -141,6 +141,43 @@ function replaceGrid(selector, items, renderer) {
   grid.replaceChildren(...items.map(renderer));
 }
 
+function renderHomeGrid(selector, items, type, limit) {
+  const grid = document.querySelector(selector);
+  if (!grid) return;
+  const templates = [...grid.querySelectorAll("article")];
+  if (!templates.length) return;
+  const cards = items.slice(0, limit).map(item => {
+    const template = templates.find(card => {
+      const link = card.querySelector('a[href^="detail-"]');
+      const id = link ? new URL(link.href).searchParams.get("id") : "";
+      return id === item.id || yabisaSlug(card.querySelector("h3")?.textContent) === yabisaSlug(item.title);
+    }) || templates[0];
+    const card = template.cloneNode(true);
+    card.querySelector("h3").textContent = item.title;
+    card.querySelector("p.muted").textContent = item.desc;
+    const image = card.querySelector("img");
+    image.src = item.image;
+    image.alt = item.title;
+    delete image.dataset.fallbackBound;
+    delete image.dataset.fallbackApplied;
+    if (type === "program") {
+      card.querySelector('a[href^="detail-program"]').href = `detail-program.html?id=${encodeURIComponent(item.id)}`;
+      card.querySelector('a[href^="campaign"]').href = `campaign.html?category=${encodeURIComponent(item.campaignCategory || item.id)}`;
+    } else {
+      const target = card.querySelector(".card-body > p:not(.muted)");
+      const recipient = item.category === "wakaf-quran" && template.querySelector('a[href*="id=wakaf-quran"]')
+        ? "<br><strong>Penerima:</strong> 200 penerima mushaf Al-Qur'an" : "";
+      target.innerHTML = `<strong>Target:</strong> ${yabisaEscapeHtml(item.target)}${recipient}`;
+      card.querySelector(".progress").style.setProperty("--value", `${item.percent}%`);
+      card.querySelector(".campaign-meta span").textContent = `Terkumpul ${item.collected}`;
+      card.querySelector(".campaign-meta strong").textContent = `${item.percent}%`;
+      card.querySelector('a[href^="detail-campaign"]').href = `detail-campaign.html?id=${encodeURIComponent(item.id)}`;
+    }
+    return card;
+  });
+  grid.replaceChildren(...cards);
+}
+
 function renderDetailCampaign(data) {
   const root = document.querySelector("[data-campaign-detail]");
   if (!root) return;
@@ -235,6 +272,8 @@ function applyCampaignFilterFromUrl() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   const cms = typeof yabisaLoadCmsAsync === "function" ? await yabisaLoadCmsAsync() : yabisaLoadCms();
+  renderHomeGrid("#homeProgramGrid", cms.programs, "program", 6);
+  renderHomeGrid("#homeCampaignGrid", cms.campaigns, "campaign", 3);
   replaceGrid("#campaignGrid", cms.campaigns, renderCampaignCard);
   replaceGrid("#programGrid", cms.programs, renderProgramCard);
   replaceGrid("#galleryGrid", cms.gallery, renderGalleryCard);
