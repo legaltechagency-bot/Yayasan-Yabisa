@@ -256,7 +256,8 @@ async function yabisaLoadCmsAsync() {
   try {
     const remote = await yabisaLoadCmsRemote();
     if (remote) {
-      localStorage.setItem(YABISA_CMS_KEY, JSON.stringify(remote));
+      window.yabisaCurrentCms = remote;
+      try { localStorage.setItem(YABISA_CMS_KEY, JSON.stringify(remote)); } catch {}
       return remote;
     }
   } catch (error) {
@@ -267,9 +268,11 @@ async function yabisaLoadCmsAsync() {
 
 async function yabisaSaveCmsRemote(nextData) {
   const normalized = yabisaNormalizeData(nextData);
-  localStorage.setItem(YABISA_CMS_KEY, JSON.stringify(normalized));
   const config = yabisaSupabaseConfig();
-  if (!config) return normalized;
+  if (!config) {
+    localStorage.setItem(YABISA_CMS_KEY, JSON.stringify(normalized));
+    return normalized;
+  }
   const accessToken = await window.yabisaSupabaseGetAccessToken?.();
   if (!accessToken) throw new Error("Sesi admin Supabase tidak ditemukan");
   const response = await fetch(`${config.url}/rest/v1/yabisa_cms`, {
@@ -283,6 +286,8 @@ async function yabisaSaveCmsRemote(nextData) {
     body: JSON.stringify({ id: "main", data: normalized, updated_at: new Date().toISOString() })
   });
   if (!response.ok) throw new Error(`Supabase save failed (${response.status})`);
+  window.yabisaCurrentCms = normalized;
+  try { localStorage.setItem(YABISA_CMS_KEY, JSON.stringify(normalized)); } catch {}
   return normalized;
 }
 

@@ -1,4 +1,4 @@
-const ADMIN_CACHE = "yabisa-admin-v8";
+const ADMIN_CACHE = "yabisa-admin-v9";
 const ADMIN_ASSETS = [
   "./admin-login.html",
   "./admin.html",
@@ -32,13 +32,14 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
   const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin || event.request.method !== "GET") return;
   const isAdminAsset = url.pathname.includes("admin") || url.pathname.includes("yabisa-data") || url.pathname.includes("logo-yabisa") || url.pathname.includes("admin-icon");
   if (!isAdminAsset) return;
   event.respondWith(
     fetch(event.request)
       .then(response => {
         const copy = response.clone();
-        caches.open(ADMIN_CACHE).then(cache => cache.put(event.request, copy));
+        if (response.ok) event.waitUntil(caches.open(ADMIN_CACHE).then(cache => cache.put(event.request, copy)));
         return response;
       })
       .catch(() => caches.match(event.request))

@@ -136,7 +136,8 @@ function renderVideoCard(video) {
 
 function replaceGrid(selector, items, renderer) {
   const grid = document.querySelector(selector);
-  if (!grid || !items?.length) return;
+  if (!grid) return;
+  if (!items?.length) { grid.replaceChildren(cmsEl("p", "muted", "Belum ada publikasi tersedia.")); return; }
   grid.replaceChildren(...items.map(renderer));
 }
 
@@ -146,6 +147,7 @@ function renderDetailCampaign(data) {
   const params = new URLSearchParams(location.search);
   const id = params.get("id") || params.get("slug");
   const campaign = data.campaigns.find(item => item.id === id || yabisaSlug(item.title) === id) || data.campaigns[0];
+  if (!campaign) { root.replaceChildren(cmsEl("p", "muted", "Campaign belum tersedia.")); return; }
   document.title = `${campaign.title} - YABISA`;
   document.querySelectorAll("[data-campaign-title]").forEach(el => el.textContent = campaign.title);
   document.querySelectorAll("[data-campaign-category]").forEach(el => el.textContent = yabisaCategoryLabel(campaign.category));
@@ -163,6 +165,7 @@ function renderDetailArticle(data) {
   if (!root) return;
   const id = new URLSearchParams(location.search).get("id");
   const article = data.articles.find(item => item.id === id || yabisaSlug(item.title) === id) || data.articles[0];
+  if (!article) { root.replaceChildren(cmsEl("p", "muted", "Artikel belum tersedia.")); return; }
   document.title = `${article.title} - YABISA`;
   document.querySelectorAll("[data-article-title]").forEach(el => el.textContent = article.title);
   document.querySelectorAll("[data-article-date]").forEach(el => el.textContent = article.date);
@@ -179,6 +182,7 @@ function renderDetailGallery(data) {
   if (!root) return;
   const id = new URLSearchParams(location.search).get("id");
   const item = data.gallery.find(g => g.id === id || yabisaSlug(g.title) === id) || data.gallery[0];
+  if (!item) { root.replaceChildren(cmsEl("p", "muted", "Album belum tersedia.")); return; }
   document.title = `${item.title} - YABISA`;
   document.querySelectorAll("[data-gallery-title]").forEach(el => el.textContent = item.title);
   document.querySelectorAll("[data-gallery-tag]").forEach(el => el.textContent = item.tag);
@@ -196,6 +200,7 @@ function renderDetailProgram(data) {
   if (!root) return;
   const id = new URLSearchParams(location.search).get("id");
   const program = data.programs.find(item => item.id === id || yabisaSlug(item.title) === id) || data.programs[0];
+  if (!program) { root.replaceChildren(cmsEl("p", "muted", "Program belum tersedia.")); return; }
   document.title = `${program.title} - YABISA`;
   document.querySelectorAll("[data-program-title]").forEach(el => el.textContent = program.title);
   document.querySelectorAll("[data-program-category]").forEach(el => el.textContent = program.category);

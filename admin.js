@@ -4,6 +4,7 @@ let data = yabisaLoadCms();
 let editState = { type: null, index: -1 };
 const pendingGalleryImages = [];
 let cmsReady = false;
+let saving = false;
 
 function toast(msg, ok = true) {
   const el = document.querySelector(".toast");
@@ -23,8 +24,7 @@ async function save() {
     renderAll();
     return true;
   } catch (error) {
-    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch {}
-    toast(`Gagal menyimpan ke Supabase: ${error.message || "periksa koneksi dan izin admin"}. Data tetap disimpan sementara di browser ini.`, false);
+    toast(`Data belum dipublikasikan: ${error.message || "periksa koneksi dan izin admin"}. Isian form tetap tersedia untuk dicoba kembali.`, false);
     return false;
   }
 }
@@ -195,6 +195,7 @@ function renderAll() {
 }
 
 function editItem(type, index) {
+  pendingGalleryImages.length = 0;
   editState = { type, index };
   const singular = type === "campaigns" ? "campaign" : type === "programs" ? "program" : type === "articles" ? "article" : type === "videos" ? "video" : "gallery";
   const form = getForm(singular);
@@ -210,9 +211,14 @@ function editItem(type, index) {
 }
 
 async function deleteItem(type, index) {
+  if (!cmsReady || saving) return toast("Tunggu sampai data selesai dimuat atau disimpan.", false);
   if (!confirm("Hapus data ini?")) return;
+  const previous = yabisaClone(data);
+  saving = true;
   data[type].splice(index, 1);
-  await save();
+  if (!await save()) { data = previous; renderAll(); }
+  saving = false;
+  clearForm(type === "campaigns" ? "campaign" : type === "programs" ? "program" : type === "articles" ? "article" : type === "videos" ? "video" : "gallery");
 }
 
 function itemWithId(item) {
@@ -235,6 +241,11 @@ document.querySelectorAll("[data-panel]").forEach(btn => btn.addEventListener("c
 
 document.querySelectorAll("form[data-form]").forEach(form => form.addEventListener("submit", async e => {
   e.preventDefault();
+  if (!cmsReady || saving) return toast("Tunggu sampai data selesai dimuat atau disimpan.", false);
+  saving = true;
+  const buttons = [...form.querySelectorAll('[type="submit"]')];
+  buttons.forEach(button => button.disabled = true);
+  try {
   const type = form.dataset.form;
   if (type === "settings") {
     const previous = yabisaClone(data);
@@ -245,6 +256,15 @@ document.querySelectorAll("form[data-form]").forEach(form => form.addEventListen
   const map = { campaign: "campaigns", program: "programs", article: "articles", gallery: "gallery", video: "videos" };
   const list = map[type];
   const item = itemWithId(readFields(form));
+  if (editState.type === list && editState.index > -1) {
+    const original = data[list][editState.index];
+    item.id = original.id;
+    if (type === "gallery" && !pendingGalleryImages.length && item.image === original.image) item.images = [...original.images];
+  } else {
+    const baseId = item.id;
+    let suffix = 2;
+    while (data[list].some(existing => existing.id === item.id)) item.id = `${baseId}-${suffix++}`;
+  }
   if (type === "video") {
     const url = yabisaYouTubeUrl(item.url);
     if (!url) return toast("Link YouTube tidak valid. Gunakan link youtube.com atau youtu.be.", false);
@@ -259,7 +279,10 @@ document.querySelectorAll("form[data-form]").forEach(form => form.addEventListen
   }
   if (editState.type === list && editState.index > -1) data[list][editState.index] = item; else data[list].push(item);
   if (await save()) clearForm(type); else data = previous;
-  if (type === "gallery") pendingGalleryImages.length = 0;
+  } finally {
+    saving = false;
+    buttons.forEach(button => button.disabled = false);
+  }
 }));
 
 document.querySelector("#exportData")?.addEventListener("click", () => {
@@ -272,6 +295,7 @@ document.querySelector("#exportData")?.addEventListener("click", () => {
 });
 
 document.querySelector("#importData")?.addEventListener("change", e => {
+  if (!cmsReady || saving) { e.target.value = ""; return toast("Data online belum siap. Muat ulang sebelum impor.", false); }
   const file = e.target.files[0];
   if (!file) return;
   const oldData = yabisaClone(data);
@@ -292,9 +316,11 @@ document.querySelector("#importData")?.addEventListener("change", e => {
 });
 
 document.querySelector("#resetData")?.addEventListener("click", async () => {
+  if (!cmsReady || saving) return toast("Data online belum siap. Muat ulang sebelum reset.", false);
   if (!confirm("Kembalikan ke data awal?")) return;
+  const previous = yabisaClone(data);
   data = yabisaClone(defaults);
-  await save();
+  if (!await save()) { data = previous; renderAll(); }
 });
 
 document.querySelector("#logoutAdmin")?.addEventListener("click", async event => {
@@ -311,14 +337,14 @@ renderAll();
 
 (async function bootstrapAdminCms() {
   try {
-    data = typeof yabisaLoadCmsAsync === "function" ? await yabisaLoadCmsAsync() : yabisaLoadCms();
+    const remote = await yabisaLoadCmsRemote();
+    if (!remote && yabisaSupabaseConfig()) throw new Error("Data CMS online belum tersedia");
+    data = remote || yabisaLoadCms();
     cmsReady = true;
     renderAll();
-    const remote = await yabisaLoadCmsRemote?.().catch(() => null);
-    if (!remote) await save();
   } catch (error) {
-    cmsReady = true;
-    toast(`Data Supabase belum dapat dimuat: ${error.message || "gunakan data lokal sementara"}.`, false);
+    cmsReady = false;
+    toast("Supabase tidak dapat dihubungi. Penyimpanan dinonaktifkan agar data online tidak tertimpa. Periksa koneksi lalu muat ulang.", false);
     renderAll();
   }
 })();
