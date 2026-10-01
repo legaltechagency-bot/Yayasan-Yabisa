@@ -148,6 +148,15 @@ function renderDetailCampaign(data) {
   const id = params.get("id") || params.get("slug");
   const campaign = data.campaigns.find(item => item.id === id || yabisaSlug(item.title) === id) || data.campaigns[0];
   if (!campaign) { root.replaceChildren(cmsEl("p", "muted", "Campaign belum tersedia.")); return; }
+  const select = document.querySelector("#confirmModal select");
+  if (select) {
+    select.replaceChildren(...data.campaigns.map(item => {
+      const option = cmsEl("option", "", item.title);
+      option.value = item.title;
+      option.selected = item.id === campaign.id;
+      return option;
+    }));
+  }
   document.title = `${campaign.title} - YABISA`;
   document.querySelectorAll("[data-campaign-title]").forEach(el => el.textContent = campaign.title);
   document.querySelectorAll("[data-campaign-category]").forEach(el => el.textContent = yabisaCategoryLabel(campaign.category));
@@ -245,7 +254,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderDetailProgram(cms);
   applyCampaignFilterFromUrl();
   updateWhatsAppLinks?.();
+  setupImageFallbacks?.();
   refreshReveal?.();
+  document.documentElement.dataset.cmsReady = "true";
 });
 
 

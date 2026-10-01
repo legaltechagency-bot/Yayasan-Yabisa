@@ -68,8 +68,16 @@ function renderDonationBanks() {
 function setupNav() {
   const menu = document.querySelector(".nav-links");
   const btn = document.querySelector(".hamburger");
-  btn?.addEventListener("click", () => menu?.classList.toggle("open"));
-  document.querySelectorAll(".nav-links a").forEach((a) => a.addEventListener("click", () => menu?.classList.remove("open")));
+  btn?.setAttribute("aria-label", "Buka menu");
+  btn?.setAttribute("aria-expanded", "false");
+  btn?.addEventListener("click", () => {
+    const open = menu?.classList.toggle("open") || false;
+    btn.setAttribute("aria-expanded", String(open));
+  });
+  document.querySelectorAll(".nav-links a").forEach((a) => a.addEventListener("click", () => {
+    menu?.classList.remove("open");
+    btn?.setAttribute("aria-expanded", "false");
+  }));
 }
 
 function openModal(modal) {
@@ -119,8 +127,12 @@ function setupFilters() {
       group.querySelectorAll("[data-filter]").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       document.querySelectorAll(group.dataset.filterGroup).forEach((item) => {
-        item.style.display = target === "all" || item.dataset.category?.includes(target) ? "" : "none";
+        const matches = group.dataset.filterGroup === "[data-campaign-card]"
+          ? item.dataset.category === target
+          : (item.dataset.category || "").split(/\s+/).includes(target);
+        item.style.display = target === "all" || matches ? "" : "none";
       });
+      refreshReveal();
     });
   });
 }
@@ -173,15 +185,18 @@ function sendDonationConfirmation(form) {
   const bank = form.querySelectorAll("select")[1]?.value || "";
   const pesan = form.querySelector("textarea")?.value?.trim() || "";
   const tanggal = new Date().toLocaleString("id-ID");
-  const text = `Halo Kak Odan, saya ingin konfirmasi donasi.\n\nNama donatur: ${nama}\nNomor WhatsApp: ${nomor}\nCampaign: ${campaign}\nNominal: ${nominal}\nBank tujuan: ${bank}\nPesan/doa: ${pesan}\nTanggal konfirmasi: ${tanggal}\n\nBukti transfer akan saya kirim manual melalui chat ini.`;
+  const anonim = form.querySelector("input[type='checkbox']")?.checked ? "Ya" : "Tidak";
+  const text = `Halo Kak Odan, saya ingin konfirmasi donasi.\n\nNama donatur: ${nama}\nNomor WhatsApp: ${nomor}\nCampaign: ${campaign}\nNominal: ${nominal}\nBank tujuan: ${bank}\nPesan/doa: ${pesan}\nDonasi anonim: ${anonim}\nTanggal konfirmasi: ${tanggal}\n\nBukti transfer akan saya kirim manual melalui chat ini.`;
   window.open(yabisaWhatsAppLink(text, currentCmsData()), "_blank", "noopener,noreferrer");
   showToast("WhatsApp dibuka. Kirim bukti transfer manual melalui chat.");
 }
 
 function setupForms() {
+  document.querySelectorAll("#confirmModal input[type='number']").forEach(input => input.min = "1");
   document.querySelectorAll("form[data-frontend-form]").forEach((form) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
+      if (!form.reportValidity()) return;
       const invalid = [...form.querySelectorAll("[required]")].some((field) => !field.value.trim());
       if (invalid) return showToast("Mohon lengkapi kolom wajib.", false);
       if (form.closest("#confirmModal")) {
@@ -234,9 +249,11 @@ function setupMisc() {
 
 function setupPageTransitions() {
   document.body.classList.add("page-ready");
+  window.addEventListener("pageshow", () => document.body.classList.remove("page-leaving"));
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
   document.addEventListener("click", event => {
     const link = event.target.closest("a[href]");
+    if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     if (!link) return;
     const href = link.getAttribute("href") || "";
     if (!href || href === "#" || href.startsWith("#") || link.target === "_blank" || link.hasAttribute("download") || link.dataset.wa !== undefined) return;
@@ -249,8 +266,10 @@ function setupPageTransitions() {
   });
 }
 
-function setupImageFallbacks() {
-  document.querySelectorAll("img").forEach(img => {
+function setupImageFallbacks(root = document) {
+  root.querySelectorAll("img").forEach(img => {
+    if (img.dataset.fallbackBound) return;
+    img.dataset.fallbackBound = "true";
     img.addEventListener("error", () => {
       if (img.dataset.fallbackApplied === "true") return;
       img.dataset.fallbackApplied = "true";
