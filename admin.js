@@ -290,8 +290,10 @@ document.querySelector("#exportData")?.addEventListener("click", () => {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "data-yabisa.json";
+  document.body.append(a);
   a.click();
-  URL.revokeObjectURL(a.href);
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
 });
 
 document.querySelector("#importData")?.addEventListener("change", e => {

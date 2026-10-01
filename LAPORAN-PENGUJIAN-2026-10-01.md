@@ -1,5 +1,17 @@
 # Pengujian YABISA, 1 Oktober 2026
 
+## Pembaruan setelah Supabase diaktifkan
+
+Endpoint Supabase kembali normal, status HTTP 200. Data online berisi 6 campaign, 6 program, 4 artikel, 4 album, dan 0 video. Simpan ulang campaign, artikel, program, dan album melalui sesi admin berhasil; timestamp database diperbarui. Semua album tetap memiliki 6 foto setelah edit. Tidak ada konten resmi dihapus atau direset.
+
+Perbaikan commit 4842935 sudah dikirim ke GitHub dan diverifikasi tampil di Vercel/domain resmi (admin cache v9). Galeri publik memuat 4 album dari Supabase; detail Asrama Yatim YABISA memuat 6 foto, tanpa error/warning pada console yang diperiksa.
+
+Logout diuji dari sesi admin aktif: kembali ke admin-login.html?logged_out=1, tetap pada login setelah refresh, dan membuka admin.html kembali diarahkan ke login.
+
+Pengujian ekspor JSON melalui alat browser mengalami timeout sehingga keberhasilan unduhan belum terkonfirmasi. Pelepasan object URL ditunda 10 detik dan anchor dipasang ke DOM saat unduhan dimulai.
+
+Batas pengujian: belum dilakukan tambah/hapus konten uji pada produksi, impor JSON yang menimpa seluruh data, reset data resmi, upload file baru, dan login ulang dengan password. Hasil di bawah mendokumentasikan kondisi awal sebelum proyek diaktifkan kembali; temuan DNS sudah terselesaikan oleh aktivasi proyek.
+
 Domain: https://www.yayasanbukitcahayaindonesia.or.id/
 
 ## Temuan utama
