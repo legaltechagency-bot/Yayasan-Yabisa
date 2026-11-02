@@ -12,6 +12,8 @@ Website resmi sudah dilayani Netlify melalui HTTPS:
 
 Domain tanpa www diarahkan otomatis ke www. Sertifikat Let's Encrypt aktif untuk domain utama dan wildcard subdomain. Sebagian resolver dapat tetap memakai cache DNS lama selama propagasi.
 
+Setelah penggantian primary domain, browser pengujian sempat menyimpan redirect lama www ke apex. Cache HTTP pengujian dibersihkan; halaman root www kemudian berhasil dibuka dan CMS selesai dimuat. Cookies dan localStorage tidak dihapus. Tidak ada perubahan cache yang menonaktifkan perlindungan browser.
+
 ## Konfigurasi
 
 - Team Netlify: Legal Tech agency (legaltechagency).
@@ -42,6 +44,8 @@ Pemrosesan Pretty URLs Netlify mengubah href HTML menjadi /nama-halaman. Selecto
 - Domain apex dan www telah diverifikasi melalui HTTPS dengan validasi TLS normal; apex berakhir pada www.
 
 Login dengan password, upload baru, dan simpan ulang konten melalui akun admin tidak diuji dalam migrasi ini karena tidak tersedia sesi login website pada domain baru. Halaman login dan akses baca CMS telah diverifikasi.
+
+Catatan: satu error MutationObserver tanpa URL sumber sempat muncul bersamaan dengan badge Netlify yang disisipkan platform. Kode aplikasi tidak menggunakan MutationObserver; pemuatan CMS dan navigasi yang diuji tetap berjalan. Error platform tersebut belum diperbaiki pada kode website.
 
 ## Vercel
 
