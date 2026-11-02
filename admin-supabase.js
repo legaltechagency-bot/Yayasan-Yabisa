@@ -44,7 +44,7 @@ if (configured) {
       });
   } else {
     syncSupabaseSession().then(user => {
-      if (user && location.pathname.endsWith("admin-login.html")) location.href = "admin.html";
+      if (user && /\/admin-login(?:\.html)?\/?$/.test(location.pathname)) location.href = "admin.html";
     });
   }
 }

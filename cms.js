@@ -141,6 +141,15 @@ function replaceGrid(selector, items, renderer) {
   grid.replaceChildren(...items.map(renderer));
 }
 
+function cmsPageLink(root, page) {
+  return [...root.querySelectorAll("a[href]")].find(link => {
+    try {
+      const path = new URL(link.href, location.href).pathname.replace(/\/$/, "").replace(/\.html$/, "");
+      return path.endsWith(`/${page}`);
+    } catch { return false; }
+  });
+}
+
 function renderHomeGrid(selector, items, type, limit) {
   const grid = document.querySelector(selector);
   if (!grid) return;
@@ -148,7 +157,7 @@ function renderHomeGrid(selector, items, type, limit) {
   if (!templates.length) return;
   const cards = items.slice(0, limit).map(item => {
     const template = templates.find(card => {
-      const link = card.querySelector('a[href^="detail-"]');
+      const link = cmsPageLink(card, `detail-${type}`);
       const id = link ? new URL(link.href).searchParams.get("id") : "";
       return id === item.id || yabisaSlug(card.querySelector("h3")?.textContent) === yabisaSlug(item.title);
     }) || templates[0];
@@ -161,8 +170,10 @@ function renderHomeGrid(selector, items, type, limit) {
     delete image.dataset.fallbackBound;
     delete image.dataset.fallbackApplied;
     if (type === "program") {
-      card.querySelector('a[href^="detail-program"]').href = `detail-program.html?id=${encodeURIComponent(item.id)}`;
-      card.querySelector('a[href^="campaign"]').href = `campaign.html?category=${encodeURIComponent(item.campaignCategory || item.id)}`;
+      const detail = cmsPageLink(card, "detail-program");
+      const campaign = cmsPageLink(card, "campaign");
+      if (detail) detail.href = `detail-program.html?id=${encodeURIComponent(item.id)}`;
+      if (campaign) campaign.href = `campaign.html?category=${encodeURIComponent(item.campaignCategory || item.id)}`;
     } else {
       const target = card.querySelector(".card-body > p:not(.muted)");
       const recipient = item.category === "wakaf-quran" && template.querySelector('a[href*="id=wakaf-quran"]')
@@ -171,7 +182,8 @@ function renderHomeGrid(selector, items, type, limit) {
       card.querySelector(".progress").style.setProperty("--value", `${item.percent}%`);
       card.querySelector(".campaign-meta span").textContent = `Terkumpul ${item.collected}`;
       card.querySelector(".campaign-meta strong").textContent = `${item.percent}%`;
-      card.querySelector('a[href^="detail-campaign"]').href = `detail-campaign.html?id=${encodeURIComponent(item.id)}`;
+      const detail = cmsPageLink(card, "detail-campaign");
+      if (detail) detail.href = `detail-campaign.html?id=${encodeURIComponent(item.id)}`;
     }
     return card;
   });

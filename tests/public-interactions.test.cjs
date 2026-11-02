@@ -4,6 +4,15 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 
+test('homepage links accept original HTML paths and Netlify pretty URLs', () => {
+  const context = vm.createContext({URL, location: {href: 'https://example.netlify.app/'}, document: {addEventListener() {}}});
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '../cms.js'), 'utf8'), context);
+  for (const href of ['detail-program.html?id=one', '/detail-program?id=one', 'https://example.netlify.app/detail-program/?id=one']) {
+    context.root = {querySelectorAll: () => [{href}]};
+    assert.equal(vm.runInContext('cmsPageLink(root, "detail-program").href', context), href);
+  }
+});
+
 test('campaign filter separates Quran from Braille while programs support multiple categories', () => {
   function run(selector, categories, target) {
     let click;
